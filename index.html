@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>คลังเก็บไฟล์</title>
+  <style>
+    body {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 16px;
+      font-family: Arial, sans-serif;
+      background: #f6f7fb;
+      color: #1f2937;
+    }
+    .box {
+      background: white;
+      border-radius: 12px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 10px #00000012;
+    }
+    input, textarea, button {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 10px;
+      margin: 6px 0;
+      border: 1px solid #d1d5db;
+      border-radius: 7px;
+    }
+    button {
+      border: 0;
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover { background: #1d4ed8; }
+    .secondary { background: #6b7280; }
+    .secondary:hover { background: #4b5563; }
+    .hidden { display: none; }
+    .file-item {
+      padding: 12px 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .file-item:last-child { border-bottom: 0; }
+    .status { color: #2563eb; }
+  </style>
+</head>
+<body>
+  <h1>📁 คลังเก็บไฟล์</h1>
+
+  <section id="authBox" class="box">
+    <h2>สมัครสมาชิก / เข้าสู่ระบบ</h2>
+    <input id="email" type="email" placeholder="อีเมล" />
+    <input id="password" type="password" placeholder="รหัสผ่านอย่างน้อย 6 ตัวอักษร" />
+    <button onclick="signIn()">เข้าสู่ระบบ</button>
+    <button class="secondary" onclick="signUp()">สมัครสมาชิก</button>
+    <p id="authStatus" class="status"></p>
+  </section>
+
+  <main id="appBox" class="hidden">
+    <section class="box">
+      <button class="secondary" onclick="signOut()">ออกจากระบบ</button>
+      <h2>อัปโหลดไฟล์</h2>
+      <input id="title" placeholder="ชื่อรายการ เช่น รายงานเดือนมกราคม" />
+      <textarea id="description" placeholder="รายละเอียดเพิ่มเติม"></textarea>
+      <input id="file" type="file" />
+      <button onclick="uploadFile()">บันทึกไฟล์</button>
+      <p id="uploadStatus" class="status"></p>
+    </section>
+
+    <section class="box">
+      <h2>ไฟล์ของฉัน</h2>
+      <div id="fileList">กำลังโหลด...</div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "ใส่_PROJECT_URL_ตรงนี้";
+    const SUPABASE_KEY = "ใส่_PUBLISHABLE_OR_ANON_KEY_ตรงนี้";
+
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    function showStatus(id, text) {
+      document.getElementById(id).textContent = text;
+    }
+
+    async function signUp() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      const { error } = await client.auth.signUp({ email, password });
+
+      if (error) {
+        showStatus("authStatus", error.message);
+        return;
+      }
+      showStatus("authStatus", "สมัครสำเร็จ โปรดตรวจสอบอีเมลเพื่อยืนยันบัญชี แล้วจึงเข้าสู่ระบบ");
+    }
+
+    async function signIn() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      const { error } = await client.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        showStatus("authStatus", error.message);
+        return;
+      }
+      await checkSession();
+    }
+
+    async function signOut() {
+      await client.auth.signOut();
+      document.getElementById("authBox").classList.remove("hidden");
+      document.getElementById("appBox").classList.add("hidden");
+    }
+
+    async function checkSession() {
+      const { data: { session } } = await client.auth.getSession();
+
+      if (session) {
+        document.getElementById("authBox").classList.add("hidden");
+        document.getElementById("appBox").classList.remove("hidden");
+        loadFiles();
+      } else {
+        document.getElementById("authBox").classList.remove("hidden");
+        document.getElementById("appBox").classList.add("hidden");
+      }
+    }
+
+    async function uploadFile() {
+      const title = document.getElementById("title").value.trim();
+      const description = document.getElementById("description").value.trim();
+      const file = document.getElementById("file").files[0];
+      const { data: { user } } = await client.auth.getUser();
+
+      if (!title || !file) {
+        showStatus("uploadStatus", "กรุณากรอกชื่อรายการและเลือกไฟล์");
+        return;
+      }
+
+      showStatus("uploadStatus", "กำลังอัปโหลด...");
+
+      const safeFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const filePath = `${user.id}/${crypto.randomUUID()}-${safeFileName}`;
+
+      const { error: uploadError } = await client.storage
+        .from("uploads")
+        .upload(filePath, file);
+
+      if (uploadError) {
+        showStatus("uploadStatus", "อัปโหลดไม่สำเร็จ: " + uploadError.message);
+        return;
+      }
+
+      const { error: dbError } = await client
+        .from("documents")
+        .insert({
+          user_id: user.id,
+          title,
+          description,
+          file_path: filePath,
+          file_name: file.name
+        });
+
+      if (dbError) {
+        showStatus("uploadStatus", "บันทึกข้อมูลไม่สำเร็จ: " + dbError.message);
+        return;
+      }
+
+      document.getElementById("title").value = "";
+      document.getElementById("description").value = "";
+      document.getElementById("file").value = "";
+      showStatus("uploadStatus", "บันทึกเรียบร้อย");
+      loadFiles();
+    }
+
+    async function loadFiles() {
+      const list = document.getElementById("fileList");
+      list.textContent = "กำลังโหลด...";
+
+      const { data, error } = await client
+        .from("documents")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        list.textContent = "โหลดข้อมูลไม่สำเร็จ: " + error.message;
+        return;
+      }
+
+      if (!data.length) {
+        list.textContent = "ยังไม่มีไฟล์";
+        return;
+      }
+
+      list.innerHTML = "";
+
+      for (const item of data) {
+        const { data: signedData } = await client.storage
+          .from("uploads")
+          .createSignedUrl(item.file_path, 3600);
+
+        const div = document.createElement("div");
+        div.className = "file-item";
+
+        const strong = document.createElement("strong");
+        strong.textContent = item.title;
+
+        const br = document.createElement("br");
+
+        const detail = document.createElement("small");
+        detail.textContent = `${item.file_name} • ${new Date(item.created_at).toLocaleString("th-TH")}`;
+
+        div.appendChild(strong);
+        div.appendChild(br);
+        div.appendChild(detail);
+
+        if (item.description) {
+          const description = document.createElement("div");
+          description.textContent = item.description;
+          div.appendChild(description);
+        }
+
+        if (signedData?.signedUrl) {
+          const link = document.createElement("a");
+          link.href = signedData.signedUrl;
+          link.target = "_blank";
+          link.textContent = "เปิด / ดาวน์โหลดไฟล์";
+          div.appendChild(document.createElement("br"));
+          div.appendChild(link);
+        }
+
+        list.appendChild(div);
+      }
+    }
+
+    checkSession();
+  </script>
+</body>
+</html>
