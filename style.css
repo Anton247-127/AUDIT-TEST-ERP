@@ -42,14 +42,14 @@ a,button{cursor:pointer;}
 .menu-toggle{display:none;background:none;border:none;padding:6px;}
 .menu-toggle svg{width:22px;height:22px;color:var(--text);}
 
-/* ---------- LAYOUT: sidebar ล็อกไว้ด้านขวาเสมอ ---------- */
+/* ---------- LAYOUT: ล็อก sidebar ไว้ด้านซ้าย ---------- */
 .layout{display:flex;margin-top:66px;min-height:calc(100vh - 66px);}
-.content{flex:1;padding:32px;max-width:calc(100% - 260px);animation:fadeIn .25s ease;order:1;}
 .sidebar{
-  width:260px;background:var(--surface);border-left:1px solid var(--border);
+  width:260px;background:var(--surface);border-right:1px solid var(--border);
   padding:22px 14px;position:sticky;top:66px;height:calc(100vh - 66px);overflow-y:auto;
-  flex-shrink:0;order:2;
+  flex-shrink:0;order:1;
 }
+.content{flex:1;padding:32px;max-width:calc(100% - 260px);animation:fadeIn .25s ease;order:2;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 
 /* ---------- SIDEBAR MENU ---------- */
@@ -122,15 +122,15 @@ tr:hover td{background:var(--hover-bg);}
 .bar{flex:1;background:linear-gradient(180deg,#3f3f46,#000);border-radius:6px 6px 0 0;position:relative;}
 .bar span{position:absolute;top:-22px;left:0;right:0;text-align:center;font-size:12px;color:var(--muted-dark);}
 
-/* ---------- RESPONSIVE: sidebar เก็บออกฝั่งขวาบนมือถือ ---------- */
+/* ---------- RESPONSIVE: sidebar เลื่อนออกจากซ้ายบนมือถือ ---------- */
 @media(max-width:900px){
   .content{max-width:100%;}
   .topnav-menu{display:none;}
   .search-box{display:none;}
   .menu-toggle{display:block;}
   .sidebar{
-    position:fixed;right:0;top:66px;transform:translateX(100%);
-    transition:.25s;box-shadow:-4px 0 20px rgba(0,0,0,.08);z-index:99;
+    position:fixed;left:0;top:66px;transform:translateX(-100%);
+    transition:.25s;box-shadow:4px 0 20px rgba(0,0,0,.08);z-index:99;
   }
   .sidebar.open{transform:translateX(0);}
   .cards-grid,.quick-grid{grid-template-columns:repeat(2,1fr);}
