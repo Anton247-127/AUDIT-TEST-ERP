@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แพลนงาน - AUDIT ERP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topnav">
+  <a href="index.html" class="logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="1.8"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    AUDIT
+  </a>
+  <nav class="topnav-menu">
+    <a href="index.html">หน้าแรก</a>
+    <a href="dashboard.html">แดชบอร์ด</a>
+    <a href="plan.html" class="active">แพลนงาน</a>
+  </nav>
+  <div class="search-box">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    <input type="text" placeholder="ค้นหาสาขา, งาน, รายงาน...">
+  </div>
+  <div class="avatar">AD</div>
+  <button class="menu-toggle" id="menuToggle">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</header>
+
+<div class="layout">
+  <main class="content">
+    <div class="page-header"><h1>แพลนงานตรวจสอบ</h1><p>ตารางแผนการตรวจสอบสาขาทั้งหมด</p></div>
+    <div class="panel">
+      <table>
+        <tr><th>ลำดับ</th><th>สาขา</th><th>ผู้ตรวจ</th><th>วันที่เริ่ม</th><th>วันที่สิ้นสุด</th><th>สถานะ</th></tr>
+        <tr><td>1</td><td>สาขารังสิต</td><td>สมชาย ใจดี</td><td>01/06/2025</td><td>03/06/2025</td><td><span class="badge done">เสร็จสิ้น</span></td></tr>
+        <tr><td>2</td><td>สาขาบางนา</td><td>สุดา แสงทอง</td><td>05/06/2025</td><td>07/06/2025</td><td><span class="badge progress">กำลังดำเนินการ</span></td></tr>
+        <tr><td>3</td><td>สาขาศรีนครินทร์</td><td>วิชัย ทองคำ</td><td>10/06/2025</td><td>12/06/2025</td><td><span class="badge wait">รอดำเนินการ</span></td></tr>
+        <tr><td>4</td><td>สาขานวนคร</td><td>อรทัย พรหมมา</td><td>15/06/2025</td><td>17/06/2025</td><td><span class="badge wait">รอดำเนินการ</span></td></tr>
+      </table>
+    </div>
+  </main>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="menu-group">
+      <button class="menu-parent" data-target="sub-branch"><span class="menu-icon">🏢</span>ตรวจสาขา<span class="chev">▾</span></button>
+      <div class="submenu" id="sub-branch">
+        <a href="branch-summary.html">หน้าสรุป</a>
+        <a href="branch-money.html">ตรวจเงิน</a>
+        <a href="branch-car.html">ตรวจรถ</a>
+        <a href="branch-parts.html">ตรวจอะไหล่</a>
+      </div>
+    </div>
+    <div class="menu-group">
+      <button class="menu-parent" data-target="sub-follow"><span class="menu-icon">📌</span>ติดตาม<span class="chev">▾</span></button>
+      <div class="submenu" id="sub-follow">
+        <a href="follow-money.html">เงิน</a>
+        <a href="follow-car.html">รถ</a>
+        <a href="follow-parts.html">อะไหล่</a>
+      </div>
+    </div>
+    <div class="menu-group">
+      <button class="menu-parent" data-target="sub-report"><span class="menu-icon">📊</span>รายงาน<span class="chev">▾</span></button>
+      <div class="submenu" id="sub-report">
+        <a href="report-car.html">รายงานรถ</a>
+        <a href="report-parts.html">รายงานอะไหล่</a>
+        <a href="report-audit.html">รายงานตรวจ</a>
+      </div>
+    </div>
+    <div class="menu-group">
+      <a href="files.html" class="menu-parent-link"><span class="menu-icon">📁</span>รวมไฟล์งาน</a>
+    </div>
+  </aside>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
