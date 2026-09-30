@@ -1,245 +1,388 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>คลังเก็บไฟล์</title>
-  <style>
-    body {
-      max-width: 800px;
-      margin: 40px auto;
-      padding: 0 16px;
-      font-family: Arial, sans-serif;
-      background: #f6f7fb;
-      color: #1f2937;
-    }
-    .box {
-      background: white;
-      border-radius: 12px;
-      padding: 22px;
-      margin-bottom: 18px;
-      box-shadow: 0 2px 10px #00000012;
-    }
-    input, textarea, button {
-      box-sizing: border-box;
-      width: 100%;
-      padding: 10px;
-      margin: 6px 0;
-      border: 1px solid #d1d5db;
-      border-radius: 7px;
-    }
-    button {
-      border: 0;
-      background: #2563eb;
-      color: white;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    button:hover { background: #1d4ed8; }
-    .secondary { background: #6b7280; }
-    .secondary:hover { background: #4b5563; }
-    .hidden { display: none; }
-    .file-item {
-      padding: 12px 0;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    .file-item:last-child { border-bottom: 0; }
-    .status { color: #2563eb; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AUDIT ERP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f5f7; --surface:#ffffff; --border:#e5e7eb;
+  --text:#1f2937; --muted:#6b7280;
+  --active-bg:#0f172a; --active-text:#ffffff;
+  --hover-bg:#f1f5f9; --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Prompt',sans-serif;background:var(--bg);color:var(--text);}
+a{text-decoration:none;color:inherit;}
+
+/* ---------- TOPNAV ---------- */
+.topnav{
+  position:fixed;top:0;left:0;right:0;height:64px;background:var(--surface);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;
+  padding:0 24px;gap:28px;z-index:100;
+}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;letter-spacing:1px;color:var(--active-bg);}
+.logo svg{width:30px;height:30px;flex-shrink:0;}
+.topnav-menu{display:flex;gap:6px;flex:1;}
+.topnav-menu a{padding:9px 16px;border-radius:10px;font-size:15px;color:var(--muted);font-weight:500;transition:.15s;}
+.topnav-menu a:hover{background:var(--hover-bg);color:var(--text);}
+.topnav-menu a.active{background:var(--active-bg);color:var(--active-text);}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:8px 14px;width:230px;}
+.search-box input{border:none;background:transparent;outline:none;font-family:'Prompt';font-size:14px;width:100%;color:var(--text);}
+.search-box svg{width:16px;height:16px;color:var(--muted);flex-shrink:0;}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--active-bg);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;margin-left:6px;flex-shrink:0;}
+.menu-toggle{display:none;background:none;border:none;cursor:pointer;padding:6px;}
+.menu-toggle svg{width:22px;height:22px;color:var(--text);}
+
+/* ---------- LAYOUT ---------- */
+.layout{display:flex;margin-top:64px;min-height:calc(100vh - 64px);}
+.content{flex:1;padding:32px;max-width:calc(100% - 260px);}
+.sidebar{
+  width:260px;background:var(--surface);border-left:1px solid var(--border);
+  padding:20px 14px;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto;
+}
+
+/* ---------- SIDEBAR MENU ---------- */
+.menu-group{margin-bottom:6px;}
+.menu-parent{
+  width:100%;display:flex;align-items:center;gap:10px;background:none;border:none;
+  padding:12px 12px;border-radius:10px;font-family:'Prompt';font-size:15px;font-weight:500;
+  color:var(--text);cursor:pointer;text-align:left;transition:.15s;
+}
+.menu-parent:hover{background:var(--hover-bg);}
+.menu-parent .chev{margin-left:auto;transition:transform .2s;color:var(--muted);}
+.menu-parent.open .chev{transform:rotate(180deg);}
+.menu-icon{font-size:17px;width:20px;text-align:center;}
+.submenu{max-height:0;overflow:hidden;transition:max-height .25s ease;padding-left:20px;}
+.submenu.open{max-height:300px;}
+.submenu a{display:block;padding:9px 14px;font-size:14px;color:var(--muted);border-radius:8px;margin:2px 0;border-left:2px solid transparent;}
+.submenu a:hover{background:var(--hover-bg);color:var(--text);}
+.submenu a.active{color:var(--active-bg);font-weight:600;border-left:2px solid var(--active-bg);background:var(--hover-bg);}
+.menu-parent-link{display:flex;align-items:center;gap:10px;padding:12px;border-radius:10px;font-size:15px;font-weight:500;color:var(--text);}
+.menu-parent-link:hover{background:var(--hover-bg);}
+.menu-parent-link.active{background:var(--active-bg);color:#fff;}
+
+/* ---------- PAGE CONTENT ---------- */
+.page{display:none;animation:fadeIn .25s ease;}
+.page.show{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.breadcrumb{font-size:13px;color:var(--muted);margin-bottom:6px;}
+.page-header{margin-bottom:24px;}
+.page-header h1{font-size:24px;font-weight:600;margin-bottom:4px;}
+.page-header p{color:var(--muted);font-size:14px;}
+
+.cards-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:26px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.stat-card .num{font-size:26px;font-weight:700;}
+.stat-card .label{color:var(--muted);font-size:13px;margin-top:6px;}
+
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:22px;}
+.panel h2{font-size:16px;font-weight:600;margin-bottom:16px;}
+
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.quick-item{border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;font-size:14px;font-weight:500;transition:.15s;cursor:pointer;}
+.quick-item:hover{background:var(--hover-bg);border-color:var(--active-bg);}
+
+table{width:100%;border-collapse:collapse;font-size:14px;}
+th{text-align:left;color:var(--muted);font-weight:500;padding:10px 12px;border-bottom:1px solid var(--border);}
+td{padding:12px;border-bottom:1px solid var(--border);}
+tr:last-child td{border-bottom:none;}
+.badge{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;}
+.badge.done{background:#e7f6ec;color:#16794b;}
+.badge.progress{background:#eef2ff;color:#4338ca;}
+.badge.wait{background:#fef6e7;color:#b45309;}
+.badge.warn{background:#fdecec;color:#c0392b;}
+
+.bar-chart{display:flex;align-items:flex-end;gap:14px;height:180px;padding:10px 4px;}
+.bar{flex:1;background:linear-gradient(180deg,#334155,#0f172a);border-radius:6px 6px 0 0;position:relative;}
+.bar span{position:absolute;top:-22px;left:0;right:0;text-align:center;font-size:12px;color:var(--muted);}
+
+/* ---------- RESPONSIVE ---------- */
+@media(max-width:900px){
+  .content{max-width:100%;}
+  .topnav-menu{display:none;}
+  .search-box{display:none;}
+  .menu-toggle{display:block;}
+  .sidebar{position:fixed;right:0;top:64px;transform:translateX(100%);transition:.25s;box-shadow:-4px 0 20px rgba(0,0,0,.08);}
+  .sidebar.open{transform:translateX(0);}
+  .cards-grid,.quick-grid{grid-template-columns:repeat(2,1fr);}
+}
+</style>
 </head>
 <body>
-  <h1>📁 คลังเก็บไฟล์</h1>
 
-  <section id="authBox" class="box">
-    <h2>สมัครสมาชิก / เข้าสู่ระบบ</h2>
-    <input id="email" type="email" placeholder="อีเมล" />
-    <input id="password" type="password" placeholder="รหัสผ่านอย่างน้อย 6 ตัวอักษร" />
-    <button onclick="signIn()">เข้าสู่ระบบ</button>
-    <button class="secondary" onclick="signUp()">สมัครสมาชิก</button>
-    <p id="authStatus" class="status"></p>
-  </section>
+<header class="topnav">
+  <div class="logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="1.8"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    AUDIT
+  </div>
+  <nav class="topnav-menu">
+    <a href="#" data-page="home" class="active">หน้าแรก</a>
+    <a href="#" data-page="dashboard">แดชบอร์ด</a>
+    <a href="#" data-page="plan">แพลนงาน</a>
+  </nav>
+  <div class="search-box">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    <input type="text" placeholder="ค้นหาสาขา, งาน, รายงาน...">
+  </div>
+  <div class="avatar">AD</div>
+  <button class="menu-toggle" id="menuToggle">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</header>
 
-  <main id="appBox" class="hidden">
-    <section class="box">
-      <button class="secondary" onclick="signOut()">ออกจากระบบ</button>
-      <h2>อัปโหลดไฟล์</h2>
-      <input id="title" placeholder="ชื่อรายการ เช่น รายงานเดือนมกราคม" />
-      <textarea id="description" placeholder="รายละเอียดเพิ่มเติม"></textarea>
-      <input id="file" type="file" />
-      <button onclick="uploadFile()">บันทึกไฟล์</button>
-      <p id="uploadStatus" class="status"></p>
+<div class="layout">
+  <main class="content">
+
+    <!-- HOME -->
+    <section class="page show" id="page-home">
+      <div class="page-header"><h1>ยินดีต้อนรับ</h1><p>ภาพรวมระบบตรวจสอบสาขา (Audit ERP)</p></div>
+      <div class="cards-grid">
+        <div class="stat-card"><div class="num">24</div><div class="label">สาขาที่ตรวจแล้ว</div></div>
+        <div class="stat-card"><div class="num">6</div><div class="label">งานที่ต้องติดตาม</div></div>
+        <div class="stat-card"><div class="num">3</div><div class="label">รายงานรอตรวจสอบ</div></div>
+        <div class="stat-card"><div class="num">128</div><div class="label">ไฟล์งานทั้งหมด</div></div>
+      </div>
+      <div class="panel">
+        <h2>เมนูลัด</h2>
+        <div class="quick-grid">
+          <div class="quick-item" data-page="branch-summary">ตรวจสาขา</div>
+          <div class="quick-item" data-page="follow-money">ติดตามงาน</div>
+          <div class="quick-item" data-page="report-audit">รายงาน</div>
+          <div class="quick-item" data-page="files">รวมไฟล์งาน</div>
+        </div>
+      </div>
     </section>
 
-    <section class="box">
-      <h2>ไฟล์ของฉัน</h2>
-      <div id="fileList">กำลังโหลด...</div>
+    <!-- DASHBOARD -->
+    <section class="page" id="page-dashboard">
+      <div class="page-header"><h1>แดชบอร์ด</h1><p>สรุปความคืบหน้าการตรวจสอบทั้งหมด</p></div>
+      <div class="cards-grid">
+        <div class="stat-card"><div class="num">78%</div><div class="label">ความคืบหน้าการตรวจ</div></div>
+        <div class="stat-card"><div class="num">32</div><div class="label">สาขาทั้งหมด</div></div>
+        <div class="stat-card"><div class="num">11</div><div class="label">ประเด็นที่พบ</div></div>
+        <div class="stat-card"><div class="num">21</div><div class="label">ปิดงานแล้ว</div></div>
+      </div>
+      <div class="panel">
+        <h2>สรุปผลตรวจรายเดือน</h2>
+        <div class="bar-chart">
+          <div class="bar" style="height:40%"><span>ม.ค.</span></div>
+          <div class="bar" style="height:65%"><span>ก.พ.</span></div>
+          <div class="bar" style="height:50%"><span>มี.ค.</span></div>
+          <div class="bar" style="height:85%"><span>เม.ย.</span></div>
+          <div class="bar" style="height:70%"><span>พ.ค.</span></div>
+          <div class="bar" style="height:95%"><span>มิ.ย.</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>งานตรวจล่าสุด</h2>
+        <table><tr><th>สาขา</th><th>ผู้ตรวจ</th><th>สถานะ</th><th>วันที่</th></tr>
+        <tr><td>สาขารังสิต</td><td>สมชาย ใจดี</td><td><span class="badge done">เสร็จสิ้น</span></td><td>02/06/2025</td></tr>
+        <tr><td>สาขาบางนา</td><td>สุดา แสงทอง</td><td><span class="badge progress">กำลังตรวจ</span></td><td>05/06/2025</td></tr>
+        <tr><td>สาขาศรีนครินทร์</td><td>วิชัย ทองคำ</td><td><span class="badge wait">รอดำเนินการ</span></td><td>10/06/2025</td></tr>
+        </table>
+      </div>
     </section>
+
+    <!-- PLAN -->
+    <section class="page" id="page-plan">
+      <div class="page-header"><h1>แพลนงานตรวจสอบ</h1><p>ตารางแผนการตรวจสอบสาขาทั้งหมด</p></div>
+      <div class="panel">
+        <table>
+          <tr><th>ลำดับ</th><th>สาขา</th><th>ผู้ตรวจ</th><th>วันที่เริ่ม</th><th>วันที่สิ้นสุด</th><th>สถานะ</th></tr>
+          <tr><td>1</td><td>สาขารังสิต</td><td>สมชาย ใจดี</td><td>01/06/2025</td><td>03/06/2025</td><td><span class="badge done">เสร็จสิ้น</span></td></tr>
+          <tr><td>2</td><td>สาขาบางนา</td><td>สุดา แสงทอง</td><td>05/06/2025</td><td>07/06/2025</td><td><span class="badge progress">กำลังดำเนินการ</span></td></tr>
+          <tr><td>3</td><td>สาขาศรีนครินทร์</td><td>วิชัย ทองคำ</td><td>10/06/2025</td><td>12/06/2025</td><td><span class="badge wait">รอดำเนินการ</span></td></tr>
+          <tr><td>4</td><td>สาขานวนคร</td><td>อรทัย พรหมมา</td><td>15/06/2025</td><td>17/06/2025</td><td><span class="badge wait">รอดำเนินการ</span></td></tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- ตรวจสาขา -->
+    <section class="page" id="page-branch-summary">
+      <div class="breadcrumb">ตรวจสาขา / หน้าสรุป</div>
+      <div class="page-header"><h1>หน้าสรุปการตรวจสาขา</h1><p>ภาพรวมผลตรวจของสาขาที่เลือก</p></div>
+      <div class="cards-grid">
+        <div class="stat-card"><div class="num">3</div><div class="label">รายการที่ตรวจ</div></div>
+        <div class="stat-card"><div class="num">1</div><div class="label">พบข้อผิดพลาด</div></div>
+        <div class="stat-card"><div class="num">2</div><div class="label">ผ่านการตรวจ</div></div>
+        <div class="stat-card"><div class="num">85%</div><div class="label">ความถูกต้องรวม</div></div>
+      </div>
+      <div class="panel"><h2>รายการตรวจของสาขา</h2>
+        <table><tr><th>หัวข้อ</th><th>ผู้รับผิดชอบ</th><th>สถานะ</th></tr>
+        <tr><td>ตรวจเงิน</td><td>สมชาย ใจดี</td><td><span class="badge done">เสร็จสิ้น</span></td></tr>
+        <tr><td>ตรวจรถ</td><td>สุดา แสงทอง</td><td><span class="badge progress">กำลังตรวจ</span></td></tr>
+        <tr><td>ตรวจอะไหล่</td><td>วิชัย ทองคำ</td><td><span class="badge wait">รอดำเนินการ</span></td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section class="page" id="page-branch-money">
+      <div class="breadcrumb">ตรวจสาขา / ตรวจเงิน</div>
+      <div class="page-header"><h1>ตรวจเงิน</h1><p>ตรวจสอบยอดเงินสดและเงินฝากประจำสาขา</p></div>
+      <div class="panel"><table>
+        <tr><th>สาขา</th><th>ยอดเงินสดในระบบ</th><th>ยอดนับจริง</th><th>ผลต่าง</th><th>สถานะ</th></tr>
+        <tr><td>รังสิต</td><td>152,300</td><td>152,300</td><td>0</td><td><span class="badge done">ถูกต้อง</span></td></tr>
+        <tr><td>บางนา</td><td>98,000</td><td>96,500</td><td>-1,500</td><td><span class="badge warn">พบผลต่าง</span></td></tr>
+      </table></div>
+    </section>
+
+    <section class="page" id="page-branch-car">
+      <div class="breadcrumb">ตรวจสาขา / ตรวจรถ</div>
+      <div class="page-header"><h1>ตรวจรถ</h1><p>ตรวจสอบทะเบียนและสภาพรถของสาขา</p></div>
+      <div class="panel"><table>
+        <tr><th>ทะเบียนรถ</th><th>ประเภท</th><th>สภาพ</th><th>สถานะ</th></tr>
+        <tr><td>กท-1234</td><td>รถบรรทุก</td><td>ปกติ</td><td><span class="badge done">ผ่าน</span></td></tr>
+        <tr><td>กท-5678</td><td>รถกระบะ</td><td>มีรอยชำรุด</td><td><span class="badge warn">พบปัญหา</span></td></tr>
+      </table></div>
+    </section>
+
+    <section class="page" id="page-branch-parts">
+      <div class="breadcrumb">ตรวจสาขา / ตรวจอะไหล่</div>
+      <div class="page-header"><h1>ตรวจอะไหล่</h1><p>ตรวจนับสต๊อกอะไหล่คงเหลือ</p></div>
+      <div class="panel"><table>
+        <tr><th>รหัสอะไหล่</th><th>ชื่อ</th><th>จำนวนในระบบ</th><th>นับจริง</th><th>ผลต่าง</th></tr>
+        <tr><td>P-001</td><td>ผ้าเบรก</td><td>50</td><td>50</td><td><span class="badge done">ตรง</span></td></tr>
+        <tr><td>P-002</td><td>ไส้กรอง</td><td>30</td><td>27</td><td><span class="badge warn">-3</span></td></tr>
+      </table></div>
+    </section>
+
+    <!-- ติดตาม -->
+    <section class="page" id="page-follow-money">
+      <div class="breadcrumb">ติดตาม / เงิน</div>
+      <div class="page-header"><h1>ติดตามงาน - เงิน</h1><p>สถานะการแก้ไขประเด็นด้านการเงิน</p></div>
+      <div class="panel"><table>
+        <tr><th>สาขา</th><th>ประเด็น</th><th>ผู้รับผิดชอบ</th><th>สถานะ</th></tr>
+        <tr><td>บางนา</td><td>ยอดเงินขาดหาย 1,500</td><td>สุดา แสงทอง</td><td><span class="badge progress">อยู่ระหว่างแก้ไข</span></td></tr>
+      </table></div>
+    </section>
+
+    <section class="page" id="page-follow-car">
+      <div class="breadcrumb">ติดตาม / รถ</div>
+      <div class="page-header"><h1>ติดตามงาน - รถ</h1><p>สถานะการซ่อมแซม/แก้ไขรถที่พบปัญหา</p></div>
+      <div class="panel"><table>
+        <tr><th>ทะเบียนรถ</th><th>ปัญหา</th><th>ผู้รับผิดชอบ</th><th>สถานะ</th></tr>
+        <tr><td>กท-5678</td><td>ตัวถังชำรุด</td><td>วิชัย ทองคำ</td><td><span class="badge wait">รอดำเนินการ</span></td></tr>
+      </table></div>
+    </section>
+
+    <section class="page" id="page-follow-parts">
+      <div class="breadcrumb">ติดตาม / อะไหล่</div>
+      <div class="page-header"><h1>ติดตามงาน - อะไหล่</h1><p>สถานะการตรวจสอบสต๊อกอะไหล่ที่ขาด</p></div>
+      <div class="panel"><table>
+        <tr><th>รหัส</th><th>รายการ</th><th>ผู้รับผิดชอบ</th><th>สถานะ</th></tr>
+        <tr><td>P-002</td><td>ไส้กรองขาด 3 ชิ้น</td><td>อรทัย พรหมมา</td><td><span class="badge progress">กำลังตรวจสอบ</span></td></tr>
+      </table></div>
+    </section>
+
+    <!-- รายงาน -->
+    <section class="page" id="page-report-car">
+      <div class="breadcrumb">รายงาน / รายงานรถ</div>
+      <div class="page-header"><h1>รายงานรถ</h1><p>สรุปผลการตรวจรถทุกสาขา</p></div>
+      <div class="panel"><table>
+        <tr><th>สาขา</th><th>จำนวนรถทั้งหมด</th><th>ผ่าน</th><th>พบปัญหา</th></tr>
+        <tr><td>รังสิต</td><td>12</td><td>12</td><td>0</td></tr>
+        <tr><td>บางนา</td><td>8</td><td>7</td><td>1</td></tr>
+      </table></div>
+    </section>
+
+    <section class="page" id="page-report-parts">
+      <div class="breadcrumb">รายงาน / รายงานอะไหล่</div>
+      <div class="page-header"><h1>รายงานอะไหล่</h1><p>สรุปผลต่างสต๊อกอะไหล่ทุกสาขา</p></div>
+      <div class="panel"><table>
+        <tr><th>สาขา</th><th>รายการตรวจ</th><th>ตรงยอด</th><th>ผลต่าง</th></tr>
+        <tr><td>รังสิต</td><td>45</td><td>45</td><td>0</td></tr>
+        <tr><td>บางนา</td><td>38</td><td>35</td><td>3</td></tr>
+      </table></div>
+    </section>
+
+    <section class="page" id="page-report-audit">
+      <div class="breadcrumb">รายงาน / รายงานตรวจ</div>
+      <div class="page-header"><h1>รายงานตรวจสอบรวม</h1><p>สรุปผลการตรวจสอบทั้งหมดรายสาขา</p></div>
+      <div class="panel"><table>
+        <tr><th>สาขา</th><th>วันที่ตรวจ</th><th>ผู้ตรวจ</th><th>ผลสรุป</th></tr>
+        <tr><td>รังสิต</td><td>03/06/2025</td><td>สมชาย ใจดี</td><td><span class="badge done">ผ่าน</span></td></tr>
+        <tr><td>บางนา</td><td>07/06/2025</td><td>สุดา แสงทอง</td><td><span class="badge warn">พบข้อบกพร่อง</span></td></tr>
+      </table></div>
+    </section>
+
+    <!-- รวมไฟล์งาน -->
+    <section class="page" id="page-files">
+      <div class="page-header"><h1>รวมไฟล์งาน</h1><p>ไฟล์เอกสารและหลักฐานการตรวจสอบทั้งหมด</p></div>
+      <div class="panel"><table>
+        <tr><th>ชื่อไฟล์</th><th>ประเภท</th><th>สาขา</th><th>อัปโหลดเมื่อ</th></tr>
+        <tr><td>working-paper-rangsit.xlsx</td><td>Excel</td><td>รังสิต</td><td>03/06/2025</td></tr>
+        <tr><td>evidence-bangna.pdf</td><td>PDF</td><td>บางนา</td><td>07/06/2025</td></tr>
+        <tr><td>photo-car-check.jpg</td><td>รูปภาพ</td><td>บางนา</td><td>07/06/2025</td></tr>
+      </table></div>
+    </section>
+
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const SUPABASE_URL = "ใส่_PROJECT_URL_ตรงนี้";
-    const SUPABASE_KEY = "ใส่_PUBLISHABLE_OR_ANON_KEY_ตรงนี้";
+  <aside class="sidebar" id="sidebar">
+    <div class="menu-group">
+      <button class="menu-parent" data-target="sub-branch"><span class="menu-icon">🏢</span>ตรวจสาขา<span class="chev">▾</span></button>
+      <div class="submenu" id="sub-branch">
+        <a href="#" data-page="branch-summary">หน้าสรุป</a>
+        <a href="#" data-page="branch-money">ตรวจเงิน</a>
+        <a href="#" data-page="branch-car">ตรวจรถ</a>
+        <a href="#" data-page="branch-parts">ตรวจอะไหล่</a>
+      </div>
+    </div>
+    <div class="menu-group">
+      <button class="menu-parent" data-target="sub-follow"><span class="menu-icon">📌</span>ติดตาม<span class="chev">▾</span></button>
+      <div class="submenu" id="sub-follow">
+        <a href="#" data-page="follow-money">เงิน</a>
+        <a href="#" data-page="follow-car">รถ</a>
+        <a href="#" data-page="follow-parts">อะไหล่</a>
+      </div>
+    </div>
+    <div class="menu-group">
+      <button class="menu-parent" data-target="sub-report"><span class="menu-icon">📊</span>รายงาน<span class="chev">▾</span></button>
+      <div class="submenu" id="sub-report">
+        <a href="#" data-page="report-car">รายงานรถ</a>
+        <a href="#" data-page="report-parts">รายงานอะไหล่</a>
+        <a href="#" data-page="report-audit">รายงานตรวจ</a>
+      </div>
+    </div>
+    <div class="menu-group">
+      <a href="#" class="menu-parent-link" data-page="files"><span class="menu-icon">📁</span>รวมไฟล์งาน</a>
+    </div>
+  </aside>
+</div>
 
-    const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+<script>
+// toggle submenu accordion
+document.querySelectorAll('.menu-parent').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const target=document.getElementById(btn.dataset.target);
+    const isOpen=target.classList.contains('open');
+    document.querySelectorAll('.submenu').forEach(s=>s.classList.remove('open'));
+    document.querySelectorAll('.menu-parent').forEach(b=>b.classList.remove('open'));
+    if(!isOpen){target.classList.add('open');btn.classList.add('open');}
+  });
+});
 
-    function showStatus(id, text) {
-      document.getElementById(id).textContent = text;
-    }
+// page navigation
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('show'));
+  const target=document.getElementById('page-'+id);
+  if(target)target.classList.add('show');
+  document.querySelectorAll('[data-page]').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('[data-page="'+id+'"]').forEach(el=>el.classList.add('active'));
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(window.innerWidth<=900) document.getElementById('sidebar').classList.remove('open');
+}
+document.querySelectorAll('[data-page]').forEach(el=>{
+  el.addEventListener('click',e=>{e.preventDefault();showPage(el.dataset.page);});
+});
 
-    async function signUp() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-
-      const { error } = await client.auth.signUp({ email, password });
-
-      if (error) {
-        showStatus("authStatus", error.message);
-        return;
-      }
-      showStatus("authStatus", "สมัครสำเร็จ โปรดตรวจสอบอีเมลเพื่อยืนยันบัญชี แล้วจึงเข้าสู่ระบบ");
-    }
-
-    async function signIn() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-
-      const { error } = await client.auth.signInWithPassword({ email, password });
-
-      if (error) {
-        showStatus("authStatus", error.message);
-        return;
-      }
-      await checkSession();
-    }
-
-    async function signOut() {
-      await client.auth.signOut();
-      document.getElementById("authBox").classList.remove("hidden");
-      document.getElementById("appBox").classList.add("hidden");
-    }
-
-    async function checkSession() {
-      const { data: { session } } = await client.auth.getSession();
-
-      if (session) {
-        document.getElementById("authBox").classList.add("hidden");
-        document.getElementById("appBox").classList.remove("hidden");
-        loadFiles();
-      } else {
-        document.getElementById("authBox").classList.remove("hidden");
-        document.getElementById("appBox").classList.add("hidden");
-      }
-    }
-
-    async function uploadFile() {
-      const title = document.getElementById("title").value.trim();
-      const description = document.getElementById("description").value.trim();
-      const file = document.getElementById("file").files[0];
-      const { data: { user } } = await client.auth.getUser();
-
-      if (!title || !file) {
-        showStatus("uploadStatus", "กรุณากรอกชื่อรายการและเลือกไฟล์");
-        return;
-      }
-
-      showStatus("uploadStatus", "กำลังอัปโหลด...");
-
-      const safeFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-      const filePath = `${user.id}/${crypto.randomUUID()}-${safeFileName}`;
-
-      const { error: uploadError } = await client.storage
-        .from("uploads")
-        .upload(filePath, file);
-
-      if (uploadError) {
-        showStatus("uploadStatus", "อัปโหลดไม่สำเร็จ: " + uploadError.message);
-        return;
-      }
-
-      const { error: dbError } = await client
-        .from("documents")
-        .insert({
-          user_id: user.id,
-          title,
-          description,
-          file_path: filePath,
-          file_name: file.name
-        });
-
-      if (dbError) {
-        showStatus("uploadStatus", "บันทึกข้อมูลไม่สำเร็จ: " + dbError.message);
-        return;
-      }
-
-      document.getElementById("title").value = "";
-      document.getElementById("description").value = "";
-      document.getElementById("file").value = "";
-      showStatus("uploadStatus", "บันทึกเรียบร้อย");
-      loadFiles();
-    }
-
-    async function loadFiles() {
-      const list = document.getElementById("fileList");
-      list.textContent = "กำลังโหลด...";
-
-      const { data, error } = await client
-        .from("documents")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        list.textContent = "โหลดข้อมูลไม่สำเร็จ: " + error.message;
-        return;
-      }
-
-      if (!data.length) {
-        list.textContent = "ยังไม่มีไฟล์";
-        return;
-      }
-
-      list.innerHTML = "";
-
-      for (const item of data) {
-        const { data: signedData } = await client.storage
-          .from("uploads")
-          .createSignedUrl(item.file_path, 3600);
-
-        const div = document.createElement("div");
-        div.className = "file-item";
-
-        const strong = document.createElement("strong");
-        strong.textContent = item.title;
-
-        const br = document.createElement("br");
-
-        const detail = document.createElement("small");
-        detail.textContent = `${item.file_name} • ${new Date(item.created_at).toLocaleString("th-TH")}`;
-
-        div.appendChild(strong);
-        div.appendChild(br);
-        div.appendChild(detail);
-
-        if (item.description) {
-          const description = document.createElement("div");
-          description.textContent = item.description;
-          div.appendChild(description);
-        }
-
-        if (signedData?.signedUrl) {
-          const link = document.createElement("a");
-          link.href = signedData.signedUrl;
-          link.target = "_blank";
-          link.textContent = "เปิด / ดาวน์โหลดไฟล์";
-          div.appendChild(document.createElement("br"));
-          div.appendChild(link);
-        }
-
-        list.appendChild(div);
-      }
-    }
-
-    checkSession();
-  </script>
+// mobile sidebar toggle
+document.getElementById('menuToggle').addEventListener('click',()=>{
+  document.getElementById('sidebar').classList.toggle('open');
+});
+</script>
 </body>
 </html>
