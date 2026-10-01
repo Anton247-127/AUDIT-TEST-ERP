@@ -231,3 +231,98 @@ tr:hover td{background:var(--hover-bg);}
 @media (max-width:640px){
   .form-grid{ grid-template-columns:1fr; }
 }
+
+
+/* ====== CSS ธีมเทา วางต่อท้ายไฟล์ CSS เดิม ====== */
+.result-page{ padding:24px; font-family:'Prompt',sans-serif; }
+
+.section-card{
+  background:#fff;
+  border:1px solid #e0e0e0;
+  border-radius:12px;
+  padding:20px;
+  margin-bottom:20px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.04);
+}
+
+.section-title{
+  font-size:15px;
+  font-weight:600;
+  color:#222;
+  background:#f0f0f0;
+  padding:10px 14px;
+  border-radius:8px;
+  margin-bottom:14px;
+}
+
+.table-wrap{ overflow-x:auto; }
+
+.result-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
+
+.result-table thead th{
+  background:#ececec;
+  color:#333;
+  font-weight:600;
+  padding:10px 8px;
+  text-align:center;
+  border:1px solid #ddd;
+  white-space:nowrap;
+}
+
+.result-table td{
+  border:1px solid #e2e2e2;
+  padding:8px;
+  vertical-align:top;
+  color:#333;
+}
+
+.col-topic{ width:120px; font-weight:500; background:#fafafa; text-align:left; }
+.col-status{ width:60px; text-align:center; }
+.col-issue, .col-cause{ min-width:260px; }
+
+.result-table tr:nth-child(even){ background:#fcfcfc; }
+
+input[type="radio"]{
+  width:17px; height:17px;
+  accent-color:#555;
+  cursor:pointer;
+}
+
+.issue-text, .cause-text{
+  width:100%;
+  border:1px solid #dcdcdc;
+  border-radius:6px;
+  padding:8px;
+  font-family:'Prompt',sans-serif;
+  font-size:13px;
+  color:#333;
+  background:#fafafa;
+  resize:vertical;
+  outline:none;
+}
+.issue-text:focus, .cause-text:focus{ border-color:#999; background:#fff; }
+
+.form-actions{ display:flex; justify-content:flex-end; margin-top:10px; }
+
+.btn-primary{
+  background:#333;
+  color:#fff;
+  border:none;
+  padding:12px 28px;
+  border-radius:8px;
+  font-size:14px;
+  font-family:'Prompt',sans-serif;
+  font-weight:500;
+  cursor:pointer;
+  transition:.15s;
+}
+.btn-primary:hover{ background:#111; }
+
+@media (max-width:768px){
+  .result-table{ font-size:12px; }
+  .col-issue, .col-cause{ min-width:180px; }
+}
