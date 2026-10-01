@@ -32,122 +32,117 @@
 <div class="layout">
   <main class="content">
     <!-- ====== วางแทนที่ <div class="breadcrumb">...</div> เดิม ในทั้ง 2 ไฟล์ ====== -->
-
-  <!-- ใน branch-money.html (เงินสดย่อย) -->
-  <div class="breadcrumb">ตรวจสาขา / ตรวจเงินสดย่อย/เงินหน้าสาขา</div>
-  
+ 
   <div class="sub-tabs">
-    <a href="branch-money.html" class="sub-tab active">เงินสดย่อย</a>
+    <a href="branch-money.html" class="sub-tab active">เงินสดย่อย /</a>
     <a href="branch-moneystone.html" class="sub-tab">เงินหน้าสาขา</a>
   </div>
     <!-- ====== วางส่วนนี้ในหน้า "ตรวจสาขา > ตรวจเงิน > นับเงินสดย่อย" ====== -->
+ <!-- ====== วางส่วนนี้ในหน้า "ตรวจสาขา > ตรวจเงิน > เงินรับชำระหน้าสาขา" ====== -->
 <section class="cash-count-page">
-  <form id="cashCountForm" class="cash-count-form">
+  <div class="breadcrumb">ตรวจสาขา / ตรวจเงิน / เงินรับชำระหน้าสาขา</div>
 
-    <!-- ===== ข้อมูลหัวฟอร์ม ===== -->
+  <form id="cashReceiptForm" class="cash-count-form">
+
     <div class="section-card">
-      <h3 class="section-title">ข้อมูลการตรวจนับ</h3>
+      <h3 class="section-title">Working paper : ใบตรวจนับเงินรับชำระหน้าสาขา</h3>
       <div class="info-grid">
-        <div class="field"><label>รหัสสาขา</label><input type="text" id="cc-code" placeholder="เช่น 333"></div>
-        <div class="field"><label>สาขา</label><input type="text" id="cc-branch" placeholder="เช่น สาขาโนนทัน (เมืองขอนแก่น 2)"></div>
-        <div class="field"><label>วันที่ตรวจนับ</label><input type="date" id="cc-date"></div>
-        <div class="field"><label>ผู้รักษาเงินสด</label><input type="text" id="cc-custodian" placeholder="ชื่อผู้รักษาเงินสด"></div>
-        <div class="field"><label>ชื่อผู้ตรวจนับ</label><input type="text" id="cc-auditor" placeholder="ชื่อผู้ตรวจนับ"></div>
-        <div class="field"><label>ตำแหน่งผู้ตรวจนับ</label><input type="text" id="cc-position" placeholder="เช่น ฝ่ายตรวจสอบ"></div>
-        <div class="field"><label>เวลาเริ่มนับ</label><input type="time" id="cc-time-start"></div>
-        <div class="field"><label>เวลาสิ้นสุด</label><input type="time" id="cc-time-end"></div>
-        <div class="field"><label>วงเงินสดย่อย (บาท)</label><input type="number" id="cc-petty-limit" placeholder="0.00" step="0.01"></div>
-        <div class="field">
-          <label>วงเงินคงเหลือในระบบ (หลังหักเบิก)</label>
-          <input type="text" id="cc-remain-system" class="readonly-field" readonly value="0.00">
-        </div>
+        <div class="field"><label>รหัสสาขา</label><input type="text" id="cr-code" placeholder="เช่น 333"></div>
+        <div class="field"><label>สาขา</label><input type="text" id="cr-branch" placeholder="เช่น สาขาโนนทัน (เมืองขอนแก่น 2)"></div>
+        <div class="field"><label>วันที่ตรวจนับ</label><input type="date" id="cr-date"></div>
+        <div class="field"><label>ผู้รักษาเงินสด</label><input type="text" id="cr-custodian" placeholder="ชื่อผู้รักษาเงินสด"></div>
+        <div class="field"><label>ชื่อผู้ตรวจนับ</label><input type="text" id="cr-auditor" placeholder="ชื่อผู้ตรวจนับ"></div>
+        <div class="field"><label>ตำแหน่งผู้ตรวจนับ</label><input type="text" id="cr-position" placeholder="เช่น ฝ่ายตรวจสอบ"></div>
+        <div class="field"><label>เวลาเริ่มนับ</label><input type="time" id="cr-time-start"></div>
+        <div class="field"><label>เสร็จเวลา</label><input type="time" id="cr-time-end"></div>
+        <div class="field"><label>ยอดรับชำระสุทธิในระบบ (บาท)</label><input type="number" id="cr-system-amount" placeholder="0.00" step="0.01"></div>
+        <div class="field"><label>ยอดยกมา (บาท)</label><input type="number" id="cr-carry-forward" placeholder="0.00" step="0.01"></div>
       </div>
     </div>
 
-    <!-- ===== ตารางนับธนบัตร/เหรียญ + ใบสำคัญ ===== -->
     <div class="two-col-wrap">
 
       <div class="section-card">
         <h3 class="section-title">นับธนบัตรและเหรียญ</h3>
         <div class="table-wrap">
-          <table class="count-table" id="denomTable">
+          <table class="count-table" id="denomTableCR">
             <thead>
               <tr><th>ชนิด</th><th>มูลค่า</th><th>จำนวน</th><th>รวมเป็นเงิน</th></tr>
             </thead>
             <tbody>
-              <tr><td rowspan="6" class="group-label">ธนบัตร</td><td>10</td><td><input type="number" class="qty-input" data-row="n10" data-denom="10" min="0" placeholder="0"></td><td class="row-total" id="total-n10">0.00</td></tr>
-              <tr><td>20</td><td><input type="number" class="qty-input" data-row="n20" data-denom="20" min="0" placeholder="0"></td><td class="row-total" id="total-n20">0.00</td></tr>
-              <tr><td>50</td><td><input type="number" class="qty-input" data-row="n50" data-denom="50" min="0" placeholder="0"></td><td class="row-total" id="total-n50">0.00</td></tr>
-              <tr><td>100</td><td><input type="number" class="qty-input" data-row="n100" data-denom="100" min="0" placeholder="0"></td><td class="row-total" id="total-n100">0.00</td></tr>
-              <tr><td>500</td><td><input type="number" class="qty-input" data-row="n500" data-denom="500" min="0" placeholder="0"></td><td class="row-total" id="total-n500">0.00</td></tr>
-              <tr><td>1,000</td><td><input type="number" class="qty-input" data-row="n1000" data-denom="1000" min="0" placeholder="0"></td><td class="row-total" id="total-n1000">0.00</td></tr>
+              <tr><td rowspan="6" class="group-label">ธนบัตร</td><td>10</td><td><input type="number" class="qty-input-cr" data-row="n10" data-denom="10" min="0" placeholder="0"></td><td class="row-total" id="cr-total-n10">0.00</td></tr>
+              <tr><td>20</td><td><input type="number" class="qty-input-cr" data-row="n20" data-denom="20" min="0" placeholder="0"></td><td class="row-total" id="cr-total-n20">0.00</td></tr>
+              <tr><td>50</td><td><input type="number" class="qty-input-cr" data-row="n50" data-denom="50" min="0" placeholder="0"></td><td class="row-total" id="cr-total-n50">0.00</td></tr>
+              <tr><td>100</td><td><input type="number" class="qty-input-cr" data-row="n100" data-denom="100" min="0" placeholder="0"></td><td class="row-total" id="cr-total-n100">0.00</td></tr>
+              <tr><td>500</td><td><input type="number" class="qty-input-cr" data-row="n500" data-denom="500" min="0" placeholder="0"></td><td class="row-total" id="cr-total-n500">0.00</td></tr>
+              <tr><td>1,000</td><td><input type="number" class="qty-input-cr" data-row="n1000" data-denom="1000" min="0" placeholder="0"></td><td class="row-total" id="cr-total-n1000">0.00</td></tr>
 
-              <tr><td rowspan="6" class="group-label">เหรียญ</td><td>0.25</td><td><input type="number" class="qty-input" data-row="c025" data-denom="0.25" min="0" placeholder="0"></td><td class="row-total" id="total-c025">0.00</td></tr>
-              <tr><td>0.50</td><td><input type="number" class="qty-input" data-row="c050" data-denom="0.5" min="0" placeholder="0"></td><td class="row-total" id="total-c050">0.00</td></tr>
-              <tr><td>1</td><td><input type="number" class="qty-input" data-row="c1" data-denom="1" min="0" placeholder="0"></td><td class="row-total" id="total-c1">0.00</td></tr>
-              <tr><td>2</td><td><input type="number" class="qty-input" data-row="c2" data-denom="2" min="0" placeholder="0"></td><td class="row-total" id="total-c2">0.00</td></tr>
-              <tr><td>5</td><td><input type="number" class="qty-input" data-row="c5" data-denom="5" min="0" placeholder="0"></td><td class="row-total" id="total-c5">0.00</td></tr>
-              <tr><td>10</td><td><input type="number" class="qty-input" data-row="c10" data-denom="10" min="0" placeholder="0"></td><td class="row-total" id="total-c10">0.00</td></tr>
+              <tr><td rowspan="6" class="group-label">เหรียญ</td><td>0.25</td><td><input type="number" class="qty-input-cr" data-row="c025" data-denom="0.25" min="0" placeholder="0"></td><td class="row-total" id="cr-total-c025">0.00</td></tr>
+              <tr><td>0.50</td><td><input type="number" class="qty-input-cr" data-row="c050" data-denom="0.5" min="0" placeholder="0"></td><td class="row-total" id="cr-total-c050">0.00</td></tr>
+              <tr><td>1</td><td><input type="number" class="qty-input-cr" data-row="c1" data-denom="1" min="0" placeholder="0"></td><td class="row-total" id="cr-total-c1">0.00</td></tr>
+              <tr><td>2</td><td><input type="number" class="qty-input-cr" data-row="c2" data-denom="2" min="0" placeholder="0"></td><td class="row-total" id="cr-total-c2">0.00</td></tr>
+              <tr><td>5</td><td><input type="number" class="qty-input-cr" data-row="c5" data-denom="5" min="0" placeholder="0"></td><td class="row-total" id="cr-total-c5">0.00</td></tr>
+              <tr><td>10</td><td><input type="number" class="qty-input-cr" data-row="c10" data-denom="10" min="0" placeholder="0"></td><td class="row-total" id="cr-total-c10">0.00</td></tr>
             </tbody>
             <tfoot>
-              <tr class="sum-row"><td colspan="3">รวมธนบัตรและเหรียญ (A)</td><td id="sumA">0.00</td></tr>
+              <tr class="sum-row"><td colspan="3">รวมธนบัตรและเหรียญ (A)</td><td id="cr-sumA">0.00</td></tr>
             </tfoot>
           </table>
         </div>
 
         <div class="field inline-field">
-          <label>เงินที่ทำเบิกในระบบ-ชดเชย (B)</label>
-          <input type="number" id="cc-B" placeholder="0.00" step="0.01">
+          <label>หัก เติมเงินสดย่อย (แนบเอกสาร)</label>
+          <input type="number" id="cr-deduct" placeholder="0.00" step="0.01">
         </div>
       </div>
 
       <div class="section-card">
-        <h3 class="section-title">ใบสำคัญรับชำระเงิน / เอกสารเบิกชดเชย</h3>
+        <h3 class="section-title">เงินรับโอน / Slip</h3>
         <div class="table-wrap">
-          <table class="count-table" id="receiptTable">
+          <table class="count-table" id="transferTable">
             <thead>
-              <tr><th>Date</th><th>No.</th><th>Description</th><th>Amount</th><th></th></tr>
+              <tr><th>Date</th><th>No. REF</th><th>Description</th><th>Amount</th><th></th></tr>
             </thead>
-            <tbody id="receiptBody">
+            <tbody id="transferBody">
               <tr>
-                <td><input type="date" class="receipt-date"></td>
-                <td><input type="text" class="receipt-no" placeholder="เลขที่"></td>
-                <td><input type="text" class="receipt-desc" value="ค้างเบิกในระบบ"></td>
-                <td><input type="number" class="receipt-amount" value="0" step="0.01"></td>
+                <td><input type="date" class="transfer-date"></td>
+                <td><input type="text" class="transfer-ref" placeholder="เลขอ้างอิง"></td>
+                <td><input type="text" class="transfer-desc" placeholder="รายละเอียด"></td>
+                <td><input type="number" class="transfer-amount" value="0" step="0.01"></td>
                 <td><button type="button" class="btn-remove-row" title="ลบแถว">×</button></td>
               </tr>
             </tbody>
             <tfoot>
-              <tr class="sum-row"><td colspan="3">Total (C)</td><td id="sumC">0.00</td><td></td></tr>
+              <tr class="sum-row"><td colspan="3">Total (B)</td><td id="cr-sumB">0.00</td><td></td></tr>
             </tfoot>
           </table>
         </div>
-        <button type="button" id="addReceiptRow" class="btn-add-line">+ เพิ่มรายการ</button>
+        <button type="button" id="addTransferRow" class="btn-add-line">+ เพิ่มรายการ</button>
       </div>
     </div>
 
     <!-- ===== สรุปยอด ===== -->
     <div class="section-card">
-      <h3 class="section-title">สรุปยอดเงินสดย่อย</h3>
+      <h3 class="section-title">สรุปยอดเงินสดในมือ</h3>
       <div class="summary-grid">
         <div class="summary-row">
-          <span>รวมเงินสดย่อยที่ตรวจนับได้ (A) + (B) + (C)</span>
-          <span id="sumTotal" class="summary-value">0.00</span>
+          <span>ยอดเงินสดในมือ (A) + (B) − หักเติมเงินสดย่อย</span>
+          <span id="cr-sumHand" class="summary-value">0.00</span>
         </div>
         <div class="summary-row">
           <span>ผลแตกต่าง เนื่องจาก
-            <input type="text" id="cc-diff-reason" class="diff-reason-input" placeholder="ระบุสาเหตุ (ถ้ามี)">
+            <input type="text" id="cr-diff-reason" class="diff-reason-input" placeholder="ระบุสาเหตุ (ถ้ามี)">
           </span>
           <span class="diff-wrap">
-            <span id="sumDiff" class="summary-value">0.00</span>
-            <span id="diffBadge" class="diff-badge ok">ถูกต้อง</span>
+            <span id="cr-sumDiff" class="summary-value">0.00</span>
+            <span id="cr-diffBadge" class="diff-badge ok">ถูกต้อง</span>
           </span>
         </div>
         <div class="summary-row highlight">
-          <span>รวมยอดเงินสดสุทธิ</span>
-          <span id="sumNet" class="summary-value">0.00</span>
+          <span>ยอดเงินสดในมือสุทธิ</span>
+          <span id="cr-sumNet" class="summary-value">0.00</span>
         </div>
-        <div class="baht-text-row">(<span id="bahtText">ศูนย์บาทถ้วน</span>)</div>
+        <div class="baht-text-row">(<span id="cr-bahtText">ศูนย์บาทถ้วน</span>)</div>
       </div>
     </div>
 
@@ -161,14 +156,14 @@
         <div class="signature-block">
           <div class="sign-line">
             <span>ลงชื่อ</span>
-            <input type="text" class="sign-input" id="sign-auditor" placeholder="................................">
+            <input type="text" class="sign-input" id="cr-sign-auditor" placeholder="................................">
           </div>
           <span class="sign-role">ผู้ตรวจนับ</span>
         </div>
         <div class="signature-block">
           <div class="sign-line">
             <span>ลงชื่อ</span>
-            <input type="text" class="sign-input" id="sign-finance" placeholder="................................">
+            <input type="text" class="sign-input" id="cr-sign-finance" placeholder="................................">
           </div>
           <span class="sign-role">พนักงานการเงิน</span>
         </div>
@@ -178,11 +173,11 @@
     <!-- ===== สรุปผลการตรวจสอบ ===== -->
     <div class="section-card">
       <h3 class="section-title">สรุปผลการตรวจสอบ</h3>
-      <textarea id="cc-summary" class="cc-summary-text" rows="3">*ไม่พบประเด็น ณ วันตรวจสอบ</textarea>
+      <textarea id="cr-summary" class="cc-summary-text" rows="3">*ไม่พบประเด็น ณ วันตรวจสอบ</textarea>
     </div>
 
     <div class="form-actions">
-      <button type="submit" class="btn-primary">บันทึกผลการนับเงินสดย่อย</button>
+      <button type="submit" class="btn-primary">บันทึกผลการตรวจนับเงินรับชำระหน้าสาขา</button>
     </div>
 
   </form>
