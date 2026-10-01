@@ -131,3 +131,38 @@ if(toggleBtn){
 
   renderList();
 })();
+
+// ====== JS: จัดการบันทึกผลการตรวจสอบ ======
+(function(){
+  const form = document.getElementById('resultForm');
+  if(!form) return;
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const rows = form.querySelectorAll('tbody tr[data-row]');
+    const results = [];
+
+    rows.forEach(row => {
+      const key = row.dataset.row;
+      const checkedRadio = row.querySelector('input[type="radio"]:checked');
+      const status = checkedRadio ? checkedRadio.value : '';
+      const issue = row.querySelector('.issue-text').value.trim();
+      const cause = row.querySelector('.cause-text').value.trim();
+
+      results.push({ key, status, issue, cause });
+    });
+
+    // เก็บผลพร้อมเวลา (ผูกกับการตรวจรอบนี้ได้ภายหลัง เช่น เชื่อมกับ auditRecords)
+    const payload = {
+      savedAt: new Date().toISOString(),
+      results
+    };
+
+    const all = JSON.parse(localStorage.getItem('auditResults') || '[]');
+    all.unshift(payload);
+    localStorage.setItem('auditResults', JSON.stringify(all));
+
+    alert('บันทึกผลการตรวจสอบเรียบร้อยแล้ว');
+  });
+})();
