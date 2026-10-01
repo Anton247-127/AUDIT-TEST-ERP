@@ -166,3 +166,80 @@ if(toggleBtn){
     alert('บันทึกผลการตรวจสอบเรียบร้อยแล้ว');
   });
 })();
+
+// ====== JS เพิ่มเติม: ปุ่มเพิ่มบรรทัด bullet + รวบรวมข้อมูลตอนบันทึก ======
+(function(){
+  // ปุ่ม + เพิ่มบรรทัด
+  document.querySelectorAll('.btn-add-line').forEach(btn=>{
+    btn.addEventListener('click', function(){
+      const targetId = this.dataset.target;
+      const container = document.getElementById(targetId);
+      const row = document.createElement('div');
+      row.className = 'bullet-row';
+      row.innerHTML = `
+        <span class="bullet-dot">•</span>
+        <input type="text" class="bullet-input" placeholder="พิมพ์ข้อความ...">
+      `;
+      container.appendChild(row);
+      row.querySelector('.bullet-input').focus();
+    });
+  });
+
+  // ตั้งค่าวันที่เริ่มต้นเป็นวันนี้ให้ทุกช่อง date (แก้ไขได้)
+  document.querySelectorAll('.date-input').forEach(input=>{
+    if(!input.value){
+      const today = new Date().toISOString().split('T')[0];
+      input.value = today;
+    }
+  });
+})();
+
+// ====== ปรับ JS บันทึกเดิม ให้ดึงข้อมูลส่วนใหม่ไปด้วย ======
+// แทนที่ event listener submit เดิมของ #resultForm ด้วยอันนี้
+(function(){
+  const form = document.getElementById('resultForm');
+  if(!form) return;
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const rows = form.querySelectorAll('tbody tr[data-row]');
+    const results = [];
+    rows.forEach(row => {
+      const key = row.dataset.row;
+      const checkedRadio = row.querySelector('input[type="radio"]:checked');
+      const status = checkedRadio ? checkedRadio.value : '';
+      const issue = row.querySelector('.issue-text').value.trim();
+      const cause = row.querySelector('.cause-text').value.trim();
+      results.push({ key, status, issue, cause });
+    });
+
+    const suggestions = Array.from(document.querySelectorAll('#auditorSuggestList .bullet-input'))
+      .map(i => i.value.trim()).filter(v => v);
+
+    const branchComments = Array.from(document.querySelectorAll('#branchCommentList .bullet-input'))
+      .map(i => i.value.trim()).filter(v => v);
+
+    const signatureBlocks = Array.from(document.querySelectorAll('.signature-block'));
+    const signatures = signatureBlocks.map(block => {
+      const role = block.querySelector('.sign-role').textContent.replace(/[()]/g,'').trim();
+      const name = block.querySelector('.sign-input').value.trim();
+      const date = block.querySelector('.date-input').value;
+      return { role, name, date };
+    });
+
+    const payload = {
+      savedAt: new Date().toISOString(),
+      results,
+      suggestions,
+      branchComments,
+      signatures
+    };
+
+    const all = JSON.parse(localStorage.getItem('auditResults') || '[]');
+    all.unshift(payload);
+    localStorage.setItem('auditResults', JSON.stringify(all));
+
+    alert('บันทึกผลการตรวจสอบเรียบร้อยแล้ว');
+  });
+})();
