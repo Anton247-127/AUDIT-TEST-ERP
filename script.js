@@ -243,3 +243,199 @@ if(toggleBtn){
     alert('บันทึกผลการตรวจสอบเรียบร้อยแล้ว');
   });
 })();
+
+
+// ====== JS: คำนวณอัตโนมัติทั้งหมด วางต่อท้ายไฟล์ JS เดิม ======
+(function(){
+  const form = document.getElementById('cashCountForm');
+  if(!form) return;
+
+  const qtyInputs = form.querySelectorAll('.qty-input');
+  const sumAEl = document.getElementById('sumA');
+  const sumCEl = document.getElementById('sumC');
+  const sumTotalEl = document.getElementById('sumTotal');
+  const sumDiffEl = document.getElementById('sumDiff');
+  const sumNetEl = document.getElementById('sumNet');
+  const diffBadge = document.getElementById('diffBadge');
+  const bahtTextEl = document.getElementById('bahtText');
+  const pettyLimitInput = document.getElementById('cc-petty-limit');
+  const remainSystemInput = document.getElementById('cc-remain-system');
+  const bInput = document.getElementById('cc-B');
+  const receiptBody = document.getElementById('receiptBody');
+  const addReceiptBtn = document.getElementById('addReceiptRow');
+
+  function fmt(n){
+    return (isNaN(n) ? 0 : n).toLocaleString('th-TH', {minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+
+  function calcA(){
+    let sum = 0;
+    qtyInputs.forEach(inp => {
+      const denom = parseFloat(inp.dataset.denom) || 0;
+      const qty = parseFloat(inp.value) || 0;
+      const total = denom * qty;
+      sum += total;
+      document.getElementById('total-' + inp.dataset.row).textContent = fmt(total);
+    });
+    sumAEl.textContent = fmt(sum);
+    return sum;
+  }
+
+  function calcC(){
+    let sum = 0;
+    receiptBody.querySelectorAll('.receipt-amount').forEach(inp => {
+      sum += parseFloat(inp.value) || 0;
+    });
+    sumCEl.textContent = fmt(sum);
+    return sum;
+  }
+
+  function recalcAll(){
+    const A = calcA();
+    const C = calcC();
+    const B = parseFloat(bInput.value) || 0;
+    const pettyLimit = parseFloat(pettyLimitInput.value) || 0;
+
+    const total = A + B + C;
+    sumTotalEl.textContent = fmt(total);
+
+    const remainSystem = pettyLimit - B;
+    remainSystemInput.value = fmt(remainSystem);
+
+    const diff = total - pettyLimit;
+    sumDiffEl.textContent = fmt(diff);
+
+    if(Math.abs(diff) < 0.01){
+      diffBadge.textContent = 'ถูกต้อง';
+      diffBadge.className = 'diff-badge ok';
+    } else {
+      diffBadge.textContent = 'ไม่ถูกต้อง';
+      diffBadge.className = 'diff-badge warn';
+    }
+
+    sumNetEl.textContent = fmt(total);
+    bahtTextEl.textContent = bahtText(total);
+  }
+
+  // --- แปลงตัวเลขเป็นคำอ่านภาษาไทย (บาทถ้วน) ---
+  function bahtText(number){
+    number = Math.round((number || 0) * 100) / 100;
+    if(number === 0) return 'ศูนย์บาทถ้วน';
+
+    const txtNumArr = ['ศูนย์','หนึ่ง','สอง','สาม','สี่','ห้า','หก','เจ็ด','แปด','เก้า'];
+    const txtDigitArr = ['','สิบ','ร้อย','พัน','หมื่น','แสน','ล้าน'];
+
+    function readNumber(numStr){
+      let result = '';
+      const len = numStr.length;
+      for(let i = 0; i < len; i++){
+        const digit = parseInt(numStr[i]);
+        const pos = len - i - 1;
+        if(digit === 0) continue;
+        if(pos === 0 && digit === 1 && len > 1){
+          result += 'เอ็ด';
+        } else if(pos === 1 && digit === 2){
+          result += 'ยี่' + txtDigitArr[1];
+        } else if(pos === 1 && digit === 1){
+          result += txtDigitArr[1];
+        } else {
+          result += txtNumArr[digit] + txtDigitArr[pos];
+        }
+      }
+      return result;
+    }
+
+    const parts = number.toFixed(2).split('.');
+    let baht = parts[0];
+    let satang = parts[1];
+
+    let result = '';
+    if(parseInt(baht) > 0){
+      result += readNumber(baht) + 'บาท';
+    }
+    if(parseInt(satang) > 0){
+      result += readNumber(satang) + 'สตางค์';
+    } else {
+      result += 'ถ้วน';
+    }
+    return result;
+  }
+
+  // --- Event bindings ---
+  qtyInputs.forEach(inp => inp.addEventListener('input', recalcAll));
+  bInput.addEventListener('input', recalcAll);
+  pettyLimitInput.addEventListener('input', recalcAll);
+
+  function bindReceiptRow(row){
+    row.querySelector('.receipt-amount').addEventListener('input', recalcAll);
+    row.querySelector('.btn-remove-row').addEventListener('click', () => {
+      row.remove();
+      recalcAll();
+    });
+  }
+  receiptBody.querySelectorAll('tr').forEach(bindReceiptRow);
+
+  addReceiptBtn.addEventListener('click', () => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><input type="date" class="receipt-date"></td>
+      <td><input type="text" class="receipt-no" placeholder="เลขที่"></td>
+      <td><input type="text" class="receipt-desc" placeholder="รายละเอียด"></td>
+      <td><input type="number" class="receipt-amount" value="0" step="0.01"></td>
+      <td><button type="button" class="btn-remove-row" title="ลบแถว">×</button></td>
+    `;
+    receiptBody.appendChild(row);
+    bindReceiptRow(row);
+  });
+
+  // ตั้งค่าวันที่วันนี้
+  const dateField = document.getElementById('cc-date');
+  if(dateField && !dateField.value){
+    dateField.value = new Date().toISOString().split('T')[0];
+  }
+
+  // --- บันทึกข้อมูล ---
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const denominations = {};
+    qtyInputs.forEach(inp => {
+      denominations[inp.dataset.row] = parseFloat(inp.value) || 0;
+    });
+
+    const receipts = Array.from(receiptBody.querySelectorAll('tr')).map(row => ({
+      date: row.querySelector('.receipt-date').value,
+      no: row.querySelector('.receipt-no').value.trim(),
+      desc: row.querySelector('.receipt-desc').value.trim(),
+      amount: parseFloat(row.querySelector('.receipt-amount').value) || 0
+    }));
+
+    const payload = {
+      savedAt: new Date().toISOString(),
+      code: document.getElementById('cc-code').value.trim(),
+      branch: document.getElementById('cc-branch').value.trim(),
+      date: document.getElementById('cc-date').value,
+      custodian: document.getElementById('cc-custodian').value.trim(),
+      auditor: document.getElementById('cc-auditor').value.trim(),
+      position: document.getElementById('cc-position').value.trim(),
+      timeStart: document.getElementById('cc-time-start').value,
+      timeEnd: document.getElementById('cc-time-end').value,
+      pettyLimit: parseFloat(pettyLimitInput.value) || 0,
+      B: parseFloat(bInput.value) || 0,
+      denominations,
+      receipts,
+      diffReason: document.getElementById('cc-diff-reason').value.trim(),
+      summary: document.getElementById('cc-summary').value.trim(),
+      signAuditor: document.getElementById('sign-auditor').value.trim(),
+      signFinance: document.getElementById('sign-finance').value.trim()
+    };
+
+    const all = JSON.parse(localStorage.getItem('cashCountRecords') || '[]');
+    all.unshift(payload);
+    localStorage.setItem('cashCountRecords', JSON.stringify(all));
+
+    alert('บันทึกผลการนับเงินสดย่อยเรียบร้อยแล้ว');
+  });
+
+  recalcAll();
+})();
