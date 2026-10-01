@@ -326,3 +326,107 @@ input[type="radio"]{
   .result-table{ font-size:12px; }
   .col-issue, .col-cause{ min-width:180px; }
 }
+
+/* ====== CSS เพิ่มเติม วางต่อท้ายไฟล์ CSS เดิม ====== */
+
+/* --- ข้อเสนอแนะ / ความคิดเห็น (bullet list) --- */
+.bullet-list{ display:flex; flex-direction:column; gap:10px; }
+
+.bullet-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  border-bottom:1px dotted #bbb;
+  padding-bottom:6px;
+}
+
+.bullet-dot{ color:#555; font-size:18px; line-height:1; }
+
+.bullet-input{
+  flex:1;
+  border:none;
+  outline:none;
+  background:transparent;
+  font-family:'Prompt',sans-serif;
+  font-size:14px;
+  color:#333;
+  padding:4px 2px;
+}
+.bullet-input::placeholder{ color:#bbb; }
+
+.btn-add-line{
+  margin-top:12px;
+  background:#f0f0f0;
+  border:1px dashed #bbb;
+  color:#555;
+  font-family:'Prompt',sans-serif;
+  font-size:13px;
+  padding:7px 16px;
+  border-radius:6px;
+  cursor:pointer;
+  transition:.15s;
+}
+.btn-add-line:hover{ background:#e4e4e4; color:#111; }
+
+/* --- ลงชื่อ --- */
+.signature-card{ padding:28px 20px; }
+
+.signature-row{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  gap:20px;
+  margin-bottom:30px;
+}
+.signature-row:last-child{ margin-bottom:0; }
+
+.signature-block{
+  flex:1 1 260px;
+  min-width:220px;
+}
+
+.sign-line{
+  display:flex;
+  align-items:baseline;
+  gap:6px;
+  font-size:14px;
+  color:#333;
+  white-space:nowrap;
+}
+
+.sign-input{
+  flex:1;
+  min-width:100px;
+  border:none;
+  border-bottom:1px solid #999;
+  background:transparent;
+  outline:none;
+  font-family:'Prompt',sans-serif;
+  font-size:14px;
+  color:#333;
+  padding:2px 4px;
+  text-align:center;
+}
+.sign-input:focus{ border-bottom-color:#111; }
+
+.sign-role{ color:#555; font-size:13px; flex-shrink:0; }
+
+.sign-date{ margin-top:10px; text-align:center; }
+
+.date-input{
+  border:1px solid #ddd;
+  border-radius:6px;
+  background:#fafafa;
+  font-family:'Prompt',sans-serif;
+  font-size:13px;
+  color:#444;
+  padding:6px 10px;
+  outline:none;
+  cursor:pointer;
+}
+.date-input:focus{ border-color:#999; background:#fff; }
+
+@media (max-width:768px){
+  .signature-row{ flex-direction:column; }
+  .sign-line{ flex-wrap:wrap; }
+}
