@@ -645,3 +645,47 @@ input[type="radio"]{
   .info-grid{ grid-template-columns:1fr; }
   .signature-row.two-cols{ grid-template-columns:1fr; }
 }
+
+/* ====== Sub-tabs: แถบสลับหน้าย่อยในหมวดตรวจเงิน ====== */
+.sub-tabs{
+  display:flex;
+  gap:8px;
+  margin:12px 0 20px;
+  border-bottom:1px solid #e3e3e3;
+  padding-bottom:0;
+}
+
+.sub-tab{
+  display:inline-block;
+  padding:10px 20px;
+  font-family:'Prompt',sans-serif;
+  font-size:14px;
+  font-weight:500;
+  color:#777;
+  text-decoration:none;
+  background:#f1f1f2;
+  border:1px solid #e3e3e3;
+  border-bottom:none;
+  border-radius:10px 10px 0 0;
+  transition:.15s;
+  position:relative;
+  top:1px;
+}
+
+.sub-tab:hover{
+  background:#e6e6e7;
+  color:#333;
+}
+
+.sub-tab.active{
+  background:#fff;
+  color:#111;
+  font-weight:600;
+  border-color:#e3e3e3;
+  border-bottom:1px solid #fff;
+}
+
+@media (max-width:480px){
+  .sub-tabs{ flex-wrap:wrap; }
+  .sub-tab{ flex:1; text-align:center; padding:10px 12px; }
+}
