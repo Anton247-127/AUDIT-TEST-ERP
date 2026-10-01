@@ -79,7 +79,209 @@
       </div>
 
     </div>
+    <!-- ====== วางส่วนนี้ในหน้า "ตรวจสาขา > ตรวจเงิน" (หรือหน้าที่ต้องการ) ====== -->
+<section class="result-page">
+  <div class="breadcrumb">ตรวจสาขา / ผลการตรวจสอบ</div>
 
+  <form id="resultForm" class="result-form">
+
+    <!-- ===== หมวด 1 ===== -->
+    <div class="section-card">
+      <h3 class="section-title">1. หัวข้อตรวจสอบเงินสดย่อย, เงินสดรายรับหน้าสาขา, เช่า ค่างวด ค่าบริการต่างๆ</h3>
+      <div class="table-wrap">
+        <table class="result-table">
+          <thead>
+            <tr>
+              <th class="col-topic">เรื่อง</th>
+              <th class="col-status">ปกติ</th>
+              <th class="col-status">ไม่ปกติ</th>
+              <th class="col-issue">ประเด็นที่ตรวจสอบพบ</th>
+              <th class="col-cause">สาเหตุความผิดพลาดที่เกิดจาก และแนวทางแก้ไข</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-row="cash_petty">
+              <td class="col-topic">เงินสดย่อย</td>
+              <td class="col-status"><input type="radio" name="status_cash_petty" value="normal" checked></td>
+              <td class="col-status"><input type="radio" name="status_cash_petty" value="abnormal"></td>
+              <td><textarea class="issue-text" rows="2">หัวข้อที่ตรวจสอบเรียบร้อย ไม่พบประเด็น (เงินสดย่อยตรงตามระบบ เบิกง่าย)</textarea></td>
+              <td><textarea class="cause-text" rows="2" placeholder="ระบุสาเหตุและแนวทางแก้ไข"></textarea></td>
+            </tr>
+            <tr data-row="cash_branch">
+              <td class="col-topic">รายรับหน้าสาขา</td>
+              <td class="col-status"><input type="radio" name="status_cash_branch" value="normal" checked></td>
+              <td class="col-status"><input type="radio" name="status_cash_branch" value="abnormal"></td>
+              <td><textarea class="issue-text" rows="2">หัวข้อที่ตรวจสอบเรียบร้อย ไม่พบประเด็น (รายรับหน้าสาขาตรงตามระบบ)</textarea></td>
+              <td><textarea class="cause-text" rows="2" placeholder="ระบุสาเหตุและแนวทางแก้ไข"></textarea></td>
+            </tr>
+            <tr data-row="bill_receipt">
+              <td class="col-topic">ใบเรียกเก็บเงิน/ใบวางบิล</td>
+              <td class="col-status"><input type="radio" name="status_bill_receipt" value="normal" checked></td>
+              <td class="col-status"><input type="radio" name="status_bill_receipt" value="abnormal"></td>
+              <td><textarea class="issue-text" rows="2">หัวข้อที่ตรวจสอบเรียบร้อย ไม่พบประเด็น มีเงินสดไม่ได้ใช้ไปตามวัตถุประสงค์</textarea></td>
+              <td><textarea class="cause-text" rows="2" placeholder="ระบุสาเหตุและแนวทางแก้ไข"></textarea></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== หมวด 2 ===== -->
+    <div class="section-card">
+      <h3 class="section-title">2. หัวข้อตรวจสอบ STOCK สินค้ารถจักรยานยนต์</h3>
+      <div class="table-wrap">
+        <table class="result-table">
+          <thead>
+            <tr>
+              <th class="col-topic">เรื่อง</th>
+              <th class="col-status">ปกติ</th>
+              <th class="col-status">ไม่ปกติ</th>
+              <th class="col-issue">ประเด็นที่ตรวจสอบพบ</th>
+              <th class="col-cause">สาเหตุความผิดพลาดที่เกิดจาก และแนวทางแก้ไข</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-row="stock_wait_sale">
+              <td class="col-topic">รอขาย</td>
+              <td class="col-status"><input type="radio" name="status_stock_wait_sale" value="normal" checked></td>
+              <td class="col-status"><input type="radio" name="status_stock_wait_sale" value="abnormal"></td>
+              <td><textarea class="issue-text" rows="2">หัวข้อที่ตรวจสอบเรียบร้อย ไม่พบประเด็น (รอขาย) จำนวน ___ คัน</textarea></td>
+              <td><textarea class="cause-text" rows="2" placeholder="ระบุสาเหตุและแนวทางแก้ไข"></textarea></td>
+            </tr>
+            <tr data-row="stock_wait_run">
+              <td class="col-topic">รอเดิน</td>
+              <td class="col-status"><input type="radio" name="status_stock_wait_run" value="normal" checked></td>
+              <td class="col-status"><input type="radio" name="status_stock_wait_run" value="abnormal"></td>
+              <td><textarea class="issue-text" rows="2">หัวข้อที่ตรวจสอบเรียบร้อย ไม่พบประเด็น (รอเดิน) ___ คัน</textarea></td>
+              <td><textarea class="cause-text" rows="2" placeholder="ระบุสาเหตุและแนวทางแก้ไข"></textarea></td>
+            </tr>
+            <tr data-row="stock_condition">
+              <td class="col-topic">สภาพรถ</td>
+              <td class="col-status"><input type="radio" name="status_stock_condition" value="normal" checked></td>
+              <td class="col-status"><input type="radio" name="status_stock_condition" value="abnormal"></td>
+              <td><textarea class="issue-text" rows="2">หัวข้อที่ตรวจสอบเรียบร้อย ไม่พบประเด็น (รถเป็นรอย) จำนวน ___ คัน</textarea></td>
+              <td><textarea class="cause-text" rows="2" placeholder="ระบุสาเหตุและแนวทางแก้ไข"></textarea></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== หมวด 3 ===== -->
+    <div class="section-card">
+      <h3 class="section-title">3. หัวข้อตรวจสอบ STOCK สินค้าอะไหล่ของสาขา</h3>
+      <div class="table-wrap">
+        <table class="result-table">
+          <thead>
+            <tr>
+              <th class="col-topic">เรื่อง</th>
+              <th class="col-status">ปกติ</th>
+              <th class="col-status">ไม่ปกติ</th>
+              <th class="col-issue">ประเด็นที่ตรวจสอบพบ</th>
+              <th class="col-cause">สาเหตุความผิดพลาดที่เกิดจาก และแนวทางแก้ไข</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-row="part_surplus">
+              <td class="col-topic">อะไหล่ส่วนเกิน</td>
+              <td class="col-status"><input type="radio" name="status_part_surplus" value="normal" checked></td>
+              <td class="col-status"><input type="radio" name="status_part_surplus" value="abnormal"></td>
+              <td><textarea class="issue-text" rows="2">หัวข้อที่ตรวจสอบ ไม่พบประเด็น อะไหล่ส่วนเกิน 2 ชิ้น มูลค่า 330 บาท</textarea></td>
+              <td><textarea class="cause-text" rows="2" placeholder="ระบุสาเหตุและแนวทางแก้ไข"></textarea></td>
+            </tr>
+            <tr data-row="part_wait">
+              <td class="col-topic">อะไหล่เด้น</td>
+              <td class="col-status"><input type="radio" name="status_part_wait" value="normal" checked></td>
+              <td class="col-status"><input type="radio" name="status_part_wait" value="abnormal"></td>
+              <td><textarea class="issue-text" rows="2">หัวข้อที่ตรวจสอบเรียบร้อย ไม่พบประเด็น อะไหล่เด้น ___ ชิ้น มูลค่า ___ บาท</textarea></td>
+              <td><textarea class="cause-text" rows="2" placeholder="ระบุสาเหตุและแนวทางแก้ไข"></textarea></td>
+            </tr>
+            <tr data-row="part_diff">
+              <td class="col-topic">อะไหล่ DIFF</td>
+              <td class="col-status"><input type="radio" name="status_part_diff" value="normal" checked></td>
+              <td class="col-status"><input type="radio" name="status_part_diff" value="abnormal"></td>
+              <td><textarea class="issue-text" rows="2">หัวข้อที่ตรวจสอบเรียบร้อย ไม่พบประเด็น อะไหล่ DIFF สลับรหัสสาขาเด้น</textarea></td>
+              <td><textarea class="cause-text" rows="2" placeholder="ระบุสาเหตุและแนวทางแก้ไข"></textarea></td>
+            </tr>
+            <tr data-row="stock_negative">
+              <td class="col-topic">STOCK ติดลบ</td>
+              <td class="col-status"><input type="radio" name="status_stock_negative" value="normal" checked></td>
+              <td class="col-status"><input type="radio" name="status_stock_negative" value="abnormal"></td>
+              <td><textarea class="issue-text" rows="2">หัวข้อที่ตรวจสอบเรียบร้อย พบประเด็น อะไหล่ที่ยอดคงเหลือติดลบ</textarea></td>
+              <td><textarea class="cause-text" rows="2" placeholder="ระบุสาเหตุและแนวทางแก้ไข"></textarea></td>
+            </tr>
+            <tr data-row="free_gift">
+              <td class="col-topic">ของแถม</td>
+              <td class="col-status"><input type="radio" name="status_free_gift" value="normal" checked></td>
+              <td class="col-status"><input type="radio" name="status_free_gift" value="abnormal"></td>
+              <td><textarea class="issue-text" rows="2">หัวข้อที่ตรวจสอบ ไม่พบประเด็น สินค้าค้างของแถมให้ลูกค้า จำนวน ___ ราย ___ ชิ้น มูลค่ารวม ___ บาท</textarea></td>
+              <td><textarea class="cause-text" rows="2" placeholder="ระบุสาเหตุและแนวทางแก้ไข"></textarea></td>
+            </tr>
+            <tr data-row="job_overdue">
+              <td class="col-topic">JOB ค้าง</td>
+              <td class="col-status"><input type="radio" name="status_job_overdue" value="normal" checked></td>
+              <td class="col-status"><input type="radio" name="status_job_overdue" value="abnormal"></td>
+              <td><textarea class="issue-text" rows="2">หัวข้อที่ตรวจสอบเรียบร้อย ไม่พบประเด็น JOB ค้างเกิน 30 วัน</textarea></td>
+              <td><textarea class="cause-text" rows="2" placeholder="ระบุสาเหตุและแนวทางแก้ไข"></textarea></td>
+            </tr>
+            <tr data-row="bill_promo">
+              <td class="col-topic">BILL โปรโมชั่น</td>
+              <td class="col-status"><input type="radio" name="status_bill_promo" value="normal" checked></td>
+              <td class="col-status"><input type="radio" name="status_bill_promo" value="abnormal"></td>
+              <td><textarea class="issue-text" rows="2">หัวข้อที่ตรวจสอบเรียบร้อย ไม่พบประเด็น การรวมพิเศษ, ของขวัญ, กิจกรรม และการเรียกเก็บเงิน</textarea></td>
+              <td><textarea class="cause-text" rows="2" placeholder="ระบุสาเหตุและแนวทางแก้ไข"></textarea></td>
+            </tr>
+            <tr data-row="part_transfer">
+              <td class="col-topic">อะไหล่ค้างรับโอน</td>
+              <td class="col-status"><input type="radio" name="status_part_transfer" value="normal" checked></td>
+              <td class="col-status"><input type="radio" name="status_part_transfer" value="abnormal"></td>
+              <td><textarea class="issue-text" rows="2">หัวข้อที่ตรวจสอบเรียบร้อย ไม่พบประเด็น รายการอะไหล่ค้างรับโอน</textarea></td>
+              <td><textarea class="cause-text" rows="2" placeholder="ระบุสาเหตุและแนวทางแก้ไข"></textarea></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== หมวด 4 ===== -->
+    <div class="section-card">
+      <h3 class="section-title">4. หัวข้อตรวจสอบปัน/ด้านอื่นๆ</h3>
+      <div class="table-wrap">
+        <table class="result-table">
+          <thead>
+            <tr>
+              <th class="col-topic">เรื่อง</th>
+              <th class="col-status">ปกติ</th>
+              <th class="col-status">ไม่ปกติ</th>
+              <th class="col-issue">ประเด็นที่ตรวจสอบพบ</th>
+              <th class="col-cause">สาเหตุความผิดพลาดที่เกิดจาก และแนวทางแก้ไข</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-row="fifo">
+              <td class="col-topic">FIFO</td>
+              <td class="col-status"><input type="radio" name="status_fifo" value="normal" checked></td>
+              <td class="col-status"><input type="radio" name="status_fifo" value="abnormal"></td>
+              <td><textarea class="issue-text" rows="2">หัวข้อที่ตรวจสอบเรียบร้อย ไม่พบประเด็น</textarea></td>
+              <td><textarea class="cause-text" rows="2" placeholder="ระบุสาเหตุและแนวทางแก้ไข"></textarea></td>
+            </tr>
+            <tr data-row="five_s">
+              <td class="col-topic">5ส. สาขา</td>
+              <td class="col-status"><input type="radio" name="status_five_s" value="normal" checked></td>
+              <td class="col-status"><input type="radio" name="status_five_s" value="abnormal"></td>
+              <td><textarea class="issue-text" rows="2">หัวข้อที่ตรวจสอบเรียบร้อย ไม่พบประเด็น</textarea></td>
+              <td><textarea class="cause-text" rows="2" placeholder="ระบุสาเหตุและแนวทางแก้ไข"></textarea></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-primary">บันทึกผลการตรวจสอบ</button>
+    </div>
+  </form>
+</section>
     <div class="form-actions">
       <button type="button" id="cancelEditBtn" class="btn-secondary" style="display:none;">ยกเลิกแก้ไข</button>
       <button type="submit" id="saveBtn" class="btn-primary">บันทึก</button>
