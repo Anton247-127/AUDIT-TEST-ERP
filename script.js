@@ -439,3 +439,178 @@ if(toggleBtn){
 
   recalcAll();
 })();
+// ====== JS: คำนวณอัตโนมัติสำหรับฟอร์มนี้ วางต่อท้ายไฟล์ JS เดิม ======
+(function(){
+  const form = document.getElementById('cashReceiptForm');
+  if(!form) return;
+
+  const qtyInputs = form.querySelectorAll('.qty-input-cr');
+  const sumAEl = document.getElementById('cr-sumA');
+  const sumBEl = document.getElementById('cr-sumB');
+  const sumHandEl = document.getElementById('cr-sumHand');
+  const sumDiffEl = document.getElementById('cr-sumDiff');
+  const sumNetEl = document.getElementById('cr-sumNet');
+  const diffBadge = document.getElementById('cr-diffBadge');
+  const bahtTextEl = document.getElementById('cr-bahtText');
+  const systemAmountInput = document.getElementById('cr-system-amount');
+  const carryForwardInput = document.getElementById('cr-carry-forward');
+  const deductInput = document.getElementById('cr-deduct');
+  const transferBody = document.getElementById('transferBody');
+  const addTransferBtn = document.getElementById('addTransferRow');
+
+  function fmt(n){
+    return (isNaN(n) ? 0 : n).toLocaleString('th-TH', {minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+
+  function calcA(){
+    let sum = 0;
+    qtyInputs.forEach(inp => {
+      const denom = parseFloat(inp.dataset.denom) || 0;
+      const qty = parseFloat(inp.value) || 0;
+      const total = denom * qty;
+      sum += total;
+      document.getElementById('cr-total-' + inp.dataset.row).textContent = fmt(total);
+    });
+    sumAEl.textContent = fmt(sum);
+    return sum;
+  }
+
+  function calcB(){
+    let sum = 0;
+    transferBody.querySelectorAll('.transfer-amount').forEach(inp => {
+      sum += parseFloat(inp.value) || 0;
+    });
+    sumBEl.textContent = fmt(sum);
+    return sum;
+  }
+
+  function bahtText(number){
+    number = Math.round((number || 0) * 100) / 100;
+    if(number === 0) return 'ศูนย์บาทถ้วน';
+    const txtNumArr = ['ศูนย์','หนึ่ง','สอง','สาม','สี่','ห้า','หก','เจ็ด','แปด','เก้า'];
+    const txtDigitArr = ['','สิบ','ร้อย','พัน','หมื่น','แสน','ล้าน'];
+    function readNumber(numStr){
+      let result = '';
+      const len = numStr.length;
+      for(let i = 0; i < len; i++){
+        const digit = parseInt(numStr[i]);
+        const pos = len - i - 1;
+        if(digit === 0) continue;
+        if(pos === 0 && digit === 1 && len > 1){ result += 'เอ็ด'; }
+        else if(pos === 1 && digit === 2){ result += 'ยี่' + txtDigitArr[1]; }
+        else if(pos === 1 && digit === 1){ result += txtDigitArr[1]; }
+        else { result += txtNumArr[digit] + txtDigitArr[pos]; }
+      }
+      return result;
+    }
+    const parts = number.toFixed(2).split('.');
+    let result = '';
+    if(parseInt(parts[0]) > 0) result += readNumber(parts[0]) + 'บาท';
+    if(parseInt(parts[1]) > 0) result += readNumber(parts[1]) + 'สตางค์';
+    else result += 'ถ้วน';
+    return result;
+  }
+
+  function recalcAll(){
+    const A = calcA();
+    const B = calcB();
+    const deduct = parseFloat(deductInput.value) || 0;
+    const systemAmount = parseFloat(systemAmountInput.value) || 0;
+    const carryForward = parseFloat(carryForwardInput.value) || 0;
+
+    const hand = A + B - deduct;
+    sumHandEl.textContent = fmt(hand);
+
+    const expected = systemAmount + carryForward;
+    const diff = hand - expected;
+    sumDiffEl.textContent = fmt(diff);
+
+    if(Math.abs(diff) < 0.01){
+      diffBadge.textContent = 'ถูกต้อง';
+      diffBadge.className = 'diff-badge ok';
+    } else {
+      diffBadge.textContent = 'ไม่ถูกต้อง';
+      diffBadge.className = 'diff-badge warn';
+    }
+
+    sumNetEl.textContent = fmt(hand);
+    bahtTextEl.textContent = bahtText(hand);
+  }
+
+  qtyInputs.forEach(inp => inp.addEventListener('input', recalcAll));
+  deductInput.addEventListener('input', recalcAll);
+  systemAmountInput.addEventListener('input', recalcAll);
+  carryForwardInput.addEventListener('input', recalcAll);
+
+  function bindTransferRow(row){
+    row.querySelector('.transfer-amount').addEventListener('input', recalcAll);
+    row.querySelector('.btn-remove-row').addEventListener('click', () => {
+      row.remove();
+      recalcAll();
+    });
+  }
+  transferBody.querySelectorAll('tr').forEach(bindTransferRow);
+
+  addTransferBtn.addEventListener('click', () => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><input type="date" class="transfer-date"></td>
+      <td><input type="text" class="transfer-ref" placeholder="เลขอ้างอิง"></td>
+      <td><input type="text" class="transfer-desc" placeholder="รายละเอียด"></td>
+      <td><input type="number" class="transfer-amount" value="0" step="0.01"></td>
+      <td><button type="button" class="btn-remove-row" title="ลบแถว">×</button></td>
+    `;
+    transferBody.appendChild(row);
+    bindTransferRow(row);
+  });
+
+  const dateField = document.getElementById('cr-date');
+  if(dateField && !dateField.value){
+    dateField.value = new Date().toISOString().split('T')[0];
+  }
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const denominations = {};
+    qtyInputs.forEach(inp => {
+      denominations[inp.dataset.row] = parseFloat(inp.value) || 0;
+    });
+
+    const transfers = Array.from(transferBody.querySelectorAll('tr')).map(row => ({
+      date: row.querySelector('.transfer-date').value,
+      ref: row.querySelector('.transfer-ref').value.trim(),
+      desc: row.querySelector('.transfer-desc').value.trim(),
+      amount: parseFloat(row.querySelector('.transfer-amount').value) || 0
+    }));
+
+    const payload = {
+      savedAt: new Date().toISOString(),
+      code: document.getElementById('cr-code').value.trim(),
+      branch: document.getElementById('cr-branch').value.trim(),
+      date: document.getElementById('cr-date').value,
+      custodian: document.getElementById('cr-custodian').value.trim(),
+      auditor: document.getElementById('cr-auditor').value.trim(),
+      position: document.getElementById('cr-position').value.trim(),
+      timeStart: document.getElementById('cr-time-start').value,
+      timeEnd: document.getElementById('cr-time-end').value,
+      systemAmount: parseFloat(systemAmountInput.value) || 0,
+      carryForward: parseFloat(carryForwardInput.value) || 0,
+      deduct: parseFloat(deductInput.value) || 0,
+      denominations,
+      transfers,
+      diffReason: document.getElementById('cr-diff-reason').value.trim(),
+      summary: document.getElementById('cr-summary').value.trim(),
+      signAuditor: document.getElementById('cr-sign-auditor').value.trim(),
+      signFinance: document.getElementById('cr-sign-finance').value.trim()
+    };
+
+    const all = JSON.parse(localStorage.getItem('cashReceiptRecords') || '[]');
+    all.unshift(payload);
+    localStorage.setItem('cashReceiptRecords', JSON.stringify(all));
+
+    alert('บันทึกผลการตรวจนับเงินรับชำระหน้าสาขาเรียบร้อยแล้ว');
+  });
+
+  recalcAll();
+})();
