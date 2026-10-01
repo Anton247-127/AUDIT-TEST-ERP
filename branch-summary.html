@@ -32,20 +32,69 @@
 <div class="layout">
   <main class="content">
     <div class="breadcrumb">ตรวจสาขา / หน้าสรุป</div>
-    <div class="page-header"><h1>หน้าสรุปการตรวจสาขา</h1><p>ภาพรวมผลตรวจของสาขาที่เลือก</p></div>
-    <div class="cards-grid">
-      <div class="stat-card"><div class="num">3</div><div class="label">รายการที่ตรวจ</div></div>
-      <div class="stat-card"><div class="num">1</div><div class="label">พบข้อผิดพลาด</div></div>
-      <div class="stat-card"><div class="num">2</div><div class="label">ผ่านการตรวจ</div></div>
-      <div class="stat-card"><div class="num">85%</div><div class="label">ความถูกต้องรวม</div></div>
+    <!-- ====== วางส่วนนี้แทนเนื้อหาหน้า "ตรวจสาขา / หน้าสรุป" ====== -->
+<section class="audit-summary-page">
+  <div class="breadcrumb">ตรวจสาขา / หน้าสรุป</div>
+
+  <form id="auditForm" class="audit-form">
+    <h3 class="form-title">ข้อมูลการตรวจสาขา</h3>
+    <div class="form-grid">
+
+      <div class="field">
+        <label>ตรวจงานครั้งที่</label>
+        <input type="text" id="f-round" placeholder="เช่น 1/2569" required>
+      </div>
+
+      <div class="field">
+        <label>รหัสสาขา</label>
+        <input type="text" id="f-code" placeholder="เช่น 101" required>
+      </div>
+
+      <div class="field">
+        <label>ร้าน/สาขา</label>
+        <input type="text" id="f-branch" placeholder="เช่น โนนทัน" required>
+      </div>
+
+      <div class="field">
+        <label>จังหวัด</label>
+        <input type="text" id="f-province" placeholder="เช่น ขอนแก่น" required>
+      </div>
+
+      <div class="field">
+        <label>วันที่เข้าตรวจ</label>
+        <input type="date" id="f-date" required>
+      </div>
+
+      <div class="field">
+        <label>ชื่อ-สกุล (ผู้ตรวจสอบ 1)</label>
+        <input type="text" id="f-auditor1" placeholder="ชื่อผู้ตรวจสอบคนที่ 1">
+      </div>
+
+      <div class="field">
+        <label>ชื่อ-สกุล (ผู้ตรวจสอบ 2)</label>
+        <input type="text" id="f-auditor2" placeholder="ชื่อผู้ตรวจสอบคนที่ 2">
+      </div>
+
+      <div class="field">
+        <label>ผู้จัดการเขต</label>
+        <input type="text" id="f-manager" placeholder="ชื่อผู้จัดการเขต">
+      </div>
+
     </div>
-    <div class="panel"><h2>รายการตรวจของสาขา</h2>
-      <table><tr><th>หัวข้อ</th><th>ผู้รับผิดชอบ</th><th>สถานะ</th></tr>
-      <tr><td>ตรวจเงิน</td><td>สมชาย ใจดี</td><td><span class="badge done">เสร็จสิ้น</span></td></tr>
-      <tr><td>ตรวจรถ</td><td>สุดา แสงทอง</td><td><span class="badge progress">กำลังตรวจ</span></td></tr>
-      <tr><td>ตรวจอะไหล่</td><td>วิชัย ทองคำ</td><td><span class="badge wait">รอดำเนินการ</span></td></tr>
-      </table>
+
+    <div class="form-actions">
+      <button type="button" id="cancelEditBtn" class="btn-secondary" style="display:none;">ยกเลิกแก้ไข</button>
+      <button type="submit" id="saveBtn" class="btn-primary">บันทึก</button>
     </div>
+  </form>
+
+  <div class="list-section">
+    <h3 class="form-title">รายการสาขาที่ตรวจล่าสุด</h3>
+    <div id="recordList" class="record-list"></div>
+    <p id="emptyMsg" class="empty-msg">ยังไม่มีรายการ</p>
+  </div>
+</section>
+
   </main>
 
   <aside class="sidebar" id="sidebar">
